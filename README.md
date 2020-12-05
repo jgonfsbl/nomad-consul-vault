@@ -67,7 +67,7 @@ pip3 install docker-compose
 
 
 # HashiCorp Nomad installation
-*Please note, URL shown below is for ARM-based systems*  c
+*Please note, URL shown below is for ARM-based systems* 
 
 ## Nomad installation  
 Follow this steps:  
