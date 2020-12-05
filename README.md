@@ -81,7 +81,6 @@ mkdir /var/lib/nomad/
 ```
 
 
-
 ## Nomad configuration
 Once completed, the configuration files must be provided, to configure a node as a server (which is responsible for scheduling jobs:  
 
@@ -226,7 +225,8 @@ unzip consul_1.9.0_linux_armhfv6.zip
 mv consul /usr/local/bin
 ```
 
-Then, the init script for SystemD needs to be installed. An example follows. The file must be placed in the path `/etc/systemd/system/consul.service`:
+## Consul configuration 
+Once performed the above steps, then, the init script for SystemD needs to be installed. An example follows. The file must be placed in the path `/etc/systemd/system/consul.service`:
 
 ```
 [Unit]
@@ -354,6 +354,8 @@ mv vault /usr/local/bin
 mkdir /etc/vault.d
 ```
 
+
+## Vault configuration
 ### /etc/vault.d/server.config
 The configuration file for a basic Vault implementation with Consul backed:
 
