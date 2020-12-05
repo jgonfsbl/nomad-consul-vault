@@ -224,7 +224,7 @@ server {
 
 To test the configuration above, run __`nomad agent -config=/etc/nomad.d`__.
 
-If everything works properly, then, enable the service system-wide using command __`systemctl enable nomad.service`__ or __`nomad server-members`__ or __`nomad node-status`__.
+If everything works properly, then, enable the service system-wide using command __`systemctl enable nomad.service`__ or __`nomad server members`__ or __`nomad node status`__.
 
 
 # HashiCorp CONSUL installation
