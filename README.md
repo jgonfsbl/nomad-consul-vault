@@ -1,7 +1,7 @@
 
 # Nomad + Consul Vault
 
-##Table of contents
+## Table of contents
 <!-- MarkdownTOC -->
 
 - Changes to perfom on `/boot/config.txt`
