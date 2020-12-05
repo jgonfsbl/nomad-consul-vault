@@ -198,6 +198,10 @@ enable_syslog = true
 ```
 client {
   enabled = true
+  host_volume "qnap-nfs" {
+    path = "/opt/NFS"
+    read_only = false
+  }
   meta {
   }
 }
