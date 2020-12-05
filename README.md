@@ -183,16 +183,6 @@ log_level = "INFO"
 enable_syslog = true
 ```
 
-### /etc/nomad.d/server.hcl
-```
-server {
-    enabled = true
-    raft_protocol = 3
-    bootstrap_expect = 3
-
-}
-```
-
 ### /etc/nomad.d/client.hcl
 ```
 client {
@@ -205,6 +195,16 @@ plugin "docker" {
   config {
     allow_caps = [ "ALL" ]
   }
+}
+```
+
+### /etc/nomad.d/server.hcl
+```
+server {
+    enabled = true
+    raft_protocol = 3
+    bootstrap_expect = 3
+
 }
 ```
 
