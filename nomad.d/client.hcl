@@ -4,6 +4,11 @@ client {
     path = "/opt/NFS"
     read_only = false
   }
+  server_join {
+    retry_join = [ "192.168.90.21", "192.168.90.22" ]
+    retry_max = 3
+    retry_interval = "15s"
+  }
   meta {
   }
 }
