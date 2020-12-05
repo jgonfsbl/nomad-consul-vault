@@ -1,43 +1,6 @@
 
 # Nomad + Consul Vault
 
-## Table of contents
-<!-- MarkdownTOC -->
-
-- Changes to perfom on `/boot/config.txt`
-- Changes to perfom on `/etc/fstab`
-- Generic Docker installation
-- Manual `docker-compose` installation
-- HashiCorp NOMAD installation
-- Nomad installation
-- Nomad configuration
-  - /etc/systemd/system/nomad.service
-  - /etc/nomad.d/base.hcl
-  - /etc/nomad.d/server.hcl
-  - /etc/nomad.d/client.hcl
-- HashiCorp CONSUL installation
-- Consul installation
-- Consul configuration
-  - /etc/systemd/system/consul.service
-  - /etc/consul.d/config.json
-- HashiCorp VAULT installation
-- Vault installation
-- Vault configuration
-  - /etc/vault.d/server.config
-  - /etc/systemd/system/vault.service
-- Vault unseal
-  - /etc/vault.d/unseal_vault.sh
-- HashiCorp TERRAFORM installation
-- Remove IPv6 support from network stack
-- Stop unnecessary system services
-- Remove sound support
-- Disable Wi-Fi and Bluetooth kernel modules at boot time
-
-<!-- /MarkdownTOC -->
-
-
-
-
 The following *how-to guide* was created in order to simplify the creation of a laboratory composed of the follwing components:
 
 Hardware:
