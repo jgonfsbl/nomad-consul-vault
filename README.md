@@ -1,29 +1,32 @@
 
 # Nomad + Consul Vault
 
-
+##Table of contents
 <!-- MarkdownTOC -->
 
-- Nomad + Consul Vault
-  - Changes to perfom on `/boot/config.txt`
-  - Changes to perfom on `/etc/fstab`
+- Changes to perfom on `/boot/config.txt`
+- Changes to perfom on `/etc/fstab`
 - Generic Docker installation
 - Manual `docker-compose` installation
-- HashiCorp Nomad installation
-  - Nomad installation
-  - Nomad configuration
-    - /etc/nomad.d/base.hcl
-    - /etc/nomad.d/server.hcl
-    - /etc/nomad.d/client.hcl
+- HashiCorp NOMAD installation
+- Nomad installation
+- Nomad configuration
+  - /etc/systemd/system/nomad.service
+  - /etc/nomad.d/base.hcl
+  - /etc/nomad.d/server.hcl
+  - /etc/nomad.d/client.hcl
 - HashiCorp CONSUL installation
-  - Consul installation
-  - Consul configuration
-    - /etc/consul.d/config.json
+- Consul installation
+- Consul configuration
+  - /etc/systemd/system/consul.service
+  - /etc/consul.d/config.json
 - HashiCorp VAULT installation
-  - Vault installation
-  - Vault configuration
-    - /etc/vault.d/server.config
-  - Vault unseal
+- Vault installation
+- Vault configuration
+  - /etc/vault.d/server.config
+  - /etc/systemd/system/vault.service
+- Vault unseal
+  - /etc/vault.d/unseal_vault.sh
 - HashiCorp TERRAFORM installation
 - Remove IPv6 support from network stack
 - Stop unnecessary system services
@@ -31,6 +34,7 @@
 - Disable Wi-Fi and Bluetooth kernel modules at boot time
 
 <!-- /MarkdownTOC -->
+
 
 
 
@@ -100,11 +104,11 @@ pip3 install docker-compose
 ```
 
 
-# HashiCorp Nomad installation
-*Please note, URL shown below is for ARM-based systems* 
+# HashiCorp NOMAD installation
+*Please note, URL shown below is for ARM-based systems*
 
-## Nomad installation  
-Follow this steps:  
+## Nomad installation
+Follow this steps:
 
 ```
 wget https://releases.hashicorp.com/nomad/1.0.0-beta3/nomad_1.0.0-beta3_linux_arm.zip
@@ -116,7 +120,7 @@ mkdir /var/lib/nomad/
 
 
 ## Nomad configuration
-Once completed, the configuration files must be provided, to configure a node as a server (which is responsible for scheduling jobs:  
+Once completed, the configuration files must be provided, to configure a node as a server (which is responsible for scheduling jobs:
 
 - server.hcl, to configure a node as a server (which is responsible for scheduling)
 - client.hcl, to configure a node as a client (which is responsible for running workloads)
@@ -129,6 +133,7 @@ unzip consul_1.9.0_linux_armhfv6.zip
 mv consul /usr/local/bin
 ```
 
+### /etc/systemd/system/nomad.service
 Then, the init script for SystemD needs to be installed. An example follows. The file must be placed in the path `/etc/systemd/system/nomad.service`
 
 ```
@@ -177,7 +182,7 @@ root@node1:/opt/nomad# tree ./
 
 Finally, the configuration files, as follows:
 
-### /etc/nomad.d/base.hcl  
+### /etc/nomad.d/base.hcl
 ```
 name = "NODE1"
 region = "global"
@@ -242,16 +247,16 @@ plugin "docker" {
 }
 ```
 
-To test the configuration above, run __`nomad agent -config=/etc/nomad.d`__.  
+To test the configuration above, run __`nomad agent -config=/etc/nomad.d`__.
 
-If everything works properly, then, enable the service system-wide using command __`systemctl enable nomad.service`__ or __`nomad server-members`__ or __`nomad node-status`__.  
+If everything works properly, then, enable the service system-wide using command __`systemctl enable nomad.service`__ or __`nomad server-members`__ or __`nomad node-status`__.
 
 
 # HashiCorp CONSUL installation
-*Please note, URL shown below is for ARM-based systems*  
+*Please note, URL shown below is for ARM-based systems*
 
-## Consul installation  
-Follow this steps:  
+## Consul installation
+Follow this steps:
 
 ```
 wget wget https://releases.hashicorp.com/consul/1.9.0/consul_1.9.0_linux_armhfv6.zip
@@ -259,7 +264,8 @@ unzip consul_1.9.0_linux_armhfv6.zip
 mv consul /usr/local/bin
 ```
 
-## Consul configuration 
+## Consul configuration
+### /etc/systemd/system/consul.service
 Once performed the above steps, then, the init script for SystemD needs to be installed. An example follows. The file must be placed in the path `/etc/systemd/system/consul.service`:
 
 ```
@@ -418,6 +424,8 @@ listener "tcp" {
 # }
 ```
 
+
+### /etc/systemd/system/vault.service
 Then, the init script for SystemD needs to be installed. An example follows. The file must be placed in the path `/etc/systemd/system/vault.service`
 
 ```
@@ -452,8 +460,10 @@ If everything works properly, then, enable the service system-wide using command
 ## Vault unseal
 When Vault is first installed it comes sealed, which essentially means, it cannot be used. Vault needs to be unsealed to allow secrets to be created.
 
-Once Vault is unsealed you will receive one or more keys and a root token. You must keep this information in a safe place. Later, every time Vault gets restarted Vault will initialize again in sealed mode, so, you will need to unseal Vault again. If you want to automate this step you will require something like the following script. 
+Once Vault is unsealed you will receive one or more keys and a root token. You must keep this information in a safe place. Later, every time Vault gets restarted Vault will initialize again in sealed mode, so, you will need to unseal Vault again. If you want to automate this step you will require something like the following script.
 
+
+### /etc/vault.d/unseal_vault.sh
 ```
 #!/bin/bash
 
@@ -489,7 +499,7 @@ curl --silent  -X PUT \
   -d '{ "key": "'$KEY_3'" }'
 ```
 
-Above script can be ussed, for example, from an Ansible playbook to perform configuration management over the Vault server/service.   
+Above script can be ussed, for example, from an Ansible playbook to perform configuration management over the Vault server/service.
 
 
 # HashiCorp TERRAFORM installation
@@ -566,4 +576,8 @@ __This change is specific for Raspberry Pi systems running Raspbian (Buster)__
   blacklist btbcm
   blacklist hci_uart
   ```
+
+
+
+
 
