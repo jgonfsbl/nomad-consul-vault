@@ -1,5 +1,5 @@
 
-# Nomad + Consul Vault
+# Nomad + Consul + Vault
 
 The following *how-to guide* was created in order to simplify the creation of a laboratory composed of the follwing components:
 
