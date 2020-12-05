@@ -83,7 +83,9 @@ mkdir /var/lib/nomad/
 
 
 ## Nomad configuration
-Once completed, the configuration files must be provided, to configure a node as a server (which is responsible for scheduling jobs
+Once completed, the configuration files must be provided, nomad can adopt two types of roles, server or simply node. When you configure Nomad as server that node can be responsible for scheduling jobs, something necessary. So, at least some of your Nomad nodes need to be of type "server". 
+
+The configuration of a Nomad node can be easily divided into pieces for better understanding:  
 
 - base.hcl, the basic configuration options
 - server.hcl, to configure a node as a server (which is responsible for scheduling)
@@ -535,4 +537,5 @@ __This change is specific for Raspberry Pi systems running Raspbian (Buster)__
   blacklist btbcm
   blacklist hci_uart
   ```
+
 
