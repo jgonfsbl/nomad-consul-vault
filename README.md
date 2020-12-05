@@ -83,8 +83,9 @@ mkdir /var/lib/nomad/
 
 
 ## Nomad configuration
-Once completed, the configuration files must be provided, to configure a node as a server (which is responsible for scheduling jobs:
+Once completed, the configuration files must be provided, to configure a node as a server (which is responsible for scheduling jobs
 
+- base.hcl, the basic configuration options
 - server.hcl, to configure a node as a server (which is responsible for scheduling)
 - client.hcl, to configure a node as a client (which is responsible for running workloads)
 
@@ -539,8 +540,3 @@ __This change is specific for Raspberry Pi systems running Raspbian (Buster)__
   blacklist btbcm
   blacklist hci_uart
   ```
-
-
-
-
-
