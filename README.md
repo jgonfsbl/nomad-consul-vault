@@ -173,19 +173,19 @@ acl {
 }
 
 consul {
-    # The address to the Consul agent.
-    address = "192.168.0.21:8500"
+  # The address to the Consul agent.
+  address = "192.168.0.21:8500"
 
-    # The service name to register the server and client with Consul.
-    server_service_name = "nomad-servers"
-    client_service_name = "nomad-clients"
+  # The service name to register the server and client with Consul.
+  server_service_name = "nomad-servers"
+  client_service_name = "nomad-clients"
 
-    # Enables automatically registering the services.
-    auto_advertise = true
+  # Enables automatically registering the services.
+  auto_advertise = true
 
-    # Enabling the server and client to bootstrap using Consul.
-    server_auto_join = true
-    client_auto_join = true
+  # Enabling the server and client to bootstrap using Consul.
+  server_auto_join = true
+  client_auto_join = true
 }
 
 data_dir = "/opt/nomad/data"
@@ -216,9 +216,9 @@ plugin "docker" {
 ### /etc/nomad.d/server.hcl
 ```
 server {
-    enabled = true
-    raft_protocol = 3
-    bootstrap_expect = 3
+  enabled = true
+  raft_protocol = 3
+  bootstrap_expect = 3
 }
 ```
 
@@ -283,70 +283,70 @@ Finally, The configuration files, as follows:
 
 ```
 {
-    "acl_default_policy": "allow",
-    "addresses": {
-        "dns": "0.0.0.0",
-        "grpc": "0.0.0.0",
-        "http": "0.0.0.0",
-        "https": "0.0.0.0"
-    },
+  "acl_default_policy": "allow",
+  "addresses": {
+    "dns": "0.0.0.0",
+    "grpc": "0.0.0.0",
+    "http": "0.0.0.0",
+    "https": "0.0.0.0"
+  },
 
-    "advertise_addr": "192.168.0.21",
-    "advertise_addr_wan": "192.168.0.21",
+  "advertise_addr": "192.168.0.21",
+  "advertise_addr_wan": "192.168.0.21",
 
-    "bind_addr": "0.0.0.0",
+  "bind_addr": "0.0.0.0",
 
-    "bootstrap_expect": 3,
+  "bootstrap_expect": 3,
 
-    "client_addr": "0.0.0.0",
+  "client_addr": "0.0.0.0",
 
-    "connect": {
-        "enabled": true
-    },
+  "connect": {
+      "enabled": true
+  },
 
-    "data_dir": "/opt/consul/data",
-    "datacenter": "LAB",
-    "disable_update_check": false,
-    "domain": "consul",
+  "data_dir": "/opt/consul/data",
+  "datacenter": "LAB",
+  "disable_update_check": false,
+  "domain": "consul",
 
-    "enable_script_checks": false,
-    "enable_syslog": true,
-    "encrypt": "32bytes_base64_encoded_encryption_key",
-    "log_level": "INFO",
-    "node_name": "NODE1",
+  "enable_script_checks": false,
+  "enable_syslog": true,
+  "encrypt": "32bytes_base64_encoded_encryption_key",
+  "log_level": "INFO",
+  "node_name": "NODE1",
 
-    "performance": {
-        "leave_drain_time": "5s",
-        "raft_multiplier": 1,
-        "rpc_hold_timeout": "7s"
-    },
+  "performance": {
+    "leave_drain_time": "5s",
+    "raft_multiplier": 1,
+    "rpc_hold_timeout": "7s"
+  },
 
-    "ports": {
-        "dns": 8600,
-        "http": 8500,
-        "server": 8300
-    },
+  "ports": {
+    "dns": 8600,
+    "http": 8500,
+    "server": 8300
+  },
 
-    "raft_protocol": 3,
-    "retry_interval": "30s",
-    "retry_interval_wan": "30s",
-    "retry_join": [
-        "192.168.0.22",
-        "192.168.0.23"
-    ],
+  "raft_protocol": 3,
+  "retry_interval": "30s",
+  "retry_interval_wan": "30s",
+  "retry_join": [
+    "192.168.0.22",
+    "192.168.0.23"
+  ],
 
-    "retry_max": 0,
-    "retry_max_wan": 0,
-    "server": true,
-    "syslog_facility": "local0",
+  "retry_max": 0,
+  "retry_max_wan": 0,
+  "server": true,
+  "syslog_facility": "local0",
 
-    "telemetry": {
-        "disable_compat_1.9": true
-    },
+  "telemetry": {
+    "disable_compat_1.9": true
+  },
 
-    "ui_config": {
-        "enabled": true
-    }
+  "ui_config": {
+    "enabled": true
+  }
 }
 ```
 
