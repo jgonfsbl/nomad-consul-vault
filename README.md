@@ -91,11 +91,6 @@ Once completed, the configuration files must be provided, to configure a node as
 
 Place one of these under `/etc/nomad.d` depending on the node's role.
 
-```
-wget https://releases.hashicorp.com/consul/1.9.0/consul_1.9.0_linux_armhfv6.zip
-unzip consul_1.9.0_linux_armhfv6.zip
-mv consul /usr/local/bin
-```
 
 ### /etc/systemd/system/nomad.service
 Then, the init script for SystemD needs to be installed. An example follows. The file must be placed in the path `/etc/systemd/system/nomad.service`
@@ -540,3 +535,4 @@ __This change is specific for Raspberry Pi systems running Raspbian (Buster)__
   blacklist btbcm
   blacklist hci_uart
   ```
+
