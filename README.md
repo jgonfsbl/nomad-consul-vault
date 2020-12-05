@@ -22,8 +22,8 @@ In order to simplify refer to hosts, in the machine hosts file you should add so
 
 ```
 192.168.0.21  node1
-192.168.0.21  node2
-192.168.0.21  node3
+192.168.0.22  node2
+192.168.0.23  node3
 ```
 
 
