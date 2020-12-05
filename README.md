@@ -142,7 +142,7 @@ OOMScoreAdjust=-1000
 WantedBy=multi-user.target
 ```
 
-Then, some folders needs to be created on a shared folder, i.e. on a NFS mount. This directory structure needs to reflect following directory tree:
+Then, some folders needs to be created on local mount. This directory structure needs to reflect following directory tree:
 
 ```
 root@node1:/opt/nomad# tree ./
