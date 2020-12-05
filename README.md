@@ -398,8 +398,8 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-# User=root
-# Group=root
+# User=vault
+# Group=vault
 ExecStart=/usr/local/bin/vault server -config /etc/vault.d/server.config
 ExecReload=/bin/kill -HUP $MAINPID
 KillSignal=SIGTERM
