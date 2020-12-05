@@ -150,9 +150,9 @@ region = "global"
 datacenter = "LAB"
 
 advertise {
-    http = "192.168.90.21"
-    rpc  = "192.168.90.21"
-    serf = "192.168.90.21"
+    http = "192.168.0.21"
+    rpc  = "192.168.0.21"
+    serf = "192.168.0.21"
 }
 
 acl {
@@ -163,7 +163,7 @@ acl {
 
 consul {
     # The address to the Consul agent.
-    address = "192.168.90.21:8500"
+    address = "192.168.0.21:8500"
 
     # The service name to register the server and client with Consul.
     server_service_name = "nomad-servers"
@@ -277,8 +277,8 @@ Finally, The configuration files, as follows:
         "https": "0.0.0.0"
     },
 
-    "advertise_addr": "192.168.90.21",
-    "advertise_addr_wan": "192.168.90.21",
+    "advertise_addr": "192.168.0.21",
+    "advertise_addr_wan": "192.168.0.21",
 
     "bind_addr": "0.0.0.0",
 
@@ -317,8 +317,8 @@ Finally, The configuration files, as follows:
     "retry_interval": "30s",
     "retry_interval_wan": "30s",
     "retry_join": [
-        "192.168.90.22",
-        "192.168.90.23"
+        "192.168.0.22",
+        "192.168.0.23"
     ],
 
     "retry_max": 0,
