@@ -16,6 +16,17 @@ Software:
 - HashiCrop Vault
 
 
+## Changes to perfom on `/etc/hosts`
+
+In order to simplify refer to hosts, in the machine hosts file you should add something like the below snippet. DON'T TRUST DNS!
+
+```
+192.168.0.21  node1
+192.168.0.21  node2
+192.168.0.21  node3
+```
+
+
 ## Changes to perfom on `/boot/config.txt`
 
 __This change is specific for Raspberry Pi systems running Raspbian (Buster)__
