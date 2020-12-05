@@ -1,4 +1,38 @@
+
 # Nomad + Consul Vault
+
+
+<!-- MarkdownTOC -->
+
+- Nomad + Consul Vault
+  - Changes to perfom on `/boot/config.txt`
+  - Changes to perfom on `/etc/fstab`
+- Generic Docker installation
+- Manual `docker-compose` installation
+- HashiCorp Nomad installation
+  - Nomad installation
+  - Nomad configuration
+    - /etc/nomad.d/base.hcl
+    - /etc/nomad.d/server.hcl
+    - /etc/nomad.d/client.hcl
+- HashiCorp CONSUL installation
+  - Consul installation
+  - Consul configuration
+    - /etc/consul.d/config.json
+- HashiCorp VAULT installation
+  - Vault installation
+  - Vault configuration
+    - /etc/vault.d/server.config
+  - Vault unseal
+- HashiCorp TERRAFORM installation
+- Remove IPv6 support from network stack
+- Stop unnecessary system services
+- Remove sound support
+- Disable Wi-Fi and Bluetooth kernel modules at boot time
+
+<!-- /MarkdownTOC -->
+
+
 
 The following *how-to guide* was created in order to simplify the creation of a laboratory composed of the follwing components:
 
@@ -137,7 +171,7 @@ Then, some folders needs to be created on a shared folder, i.e. on a NFS mount. 
 root@node1:/opt/nomad# tree ./
 ./
 ├── data
-│   └── plugins
+│   └── plugins
 └── jobs
 ```
 
@@ -481,9 +515,9 @@ mv terraform /usr/local/bin
     ```
 
 - Edit /etc/rc.local, and add before `exit 0` this line
-	```
-	service procps reload
-	```
+  ```
+  service procps reload
+  ```
 - Reboot
 
 
@@ -492,25 +526,25 @@ mv terraform /usr/local/bin
 
 - List services
 
-	```
-	systemctl list-unit-files | grep enabled
-	```
+  ```
+  systemctl list-unit-files | grep enabled
+  ```
 
 - Stop services unwanted (they are kept in /lib/systemd/system/*.service)
 
-	```
-	systemctl disable [servicename].service
-	```
+  ```
+  systemctl disable [servicename].service
+  ```
 
 - Disabled services
 
-	```
-	systemctl disable avahi-daemon
-	systemctl disable triggerhappy
-	systemctl disable dbus-fi.w1.wpa_supplicant1.service
-	systemctl disable wpa_supplicant.service
-	systemctl disable bluetooth.service
-	```
+  ```
+  systemctl disable avahi-daemon
+  systemctl disable triggerhappy
+  systemctl disable dbus-fi.w1.wpa_supplicant1.service
+  systemctl disable wpa_supplicant.service
+  systemctl disable bluetooth.service
+  ```
 
 
 # Remove sound support
@@ -523,17 +557,13 @@ __This change is specific for Raspberry Pi systems running Raspbian (Buster)__
 
 - Add this lines to /etc/modprobe.d/blacklist-wifibluez.conf
 
-	```
-	## WiFi
-	blacklist brcmfmac
-	blacklist brcmutil
+  ```
+  ## WiFi
+  blacklist brcmfmac
+  blacklist brcmutil
 
-	## Bluetooth
-	blacklist btbcm
-	blacklist hci_uart
-	```
-
-
-
-
+  ## Bluetooth
+  blacklist btbcm
+  blacklist hci_uart
+  ```
 
