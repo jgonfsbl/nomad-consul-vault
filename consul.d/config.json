@@ -27,7 +27,7 @@
 
     "enable_script_checks": false,
     "enable_syslog": true,
-    "encrypt": "OPann6YcMHct0ONIC8Exj+UOmDUVN3uVcTKI85IT5AE=",
+    "encrypt": "32bytes_base64_encoded_encryption_key",
 
     "log_level": "INFO",
     "node_name": "NODE1",
