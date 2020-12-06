@@ -385,6 +385,10 @@ The configuration file for a basic Vault implementation with Consul backed:
 
 ui = true
 
+# Advertise the non-loopback interface
+api_addr = "http://192.168.0.21:8200"
+cluster_addr = "http://192.168.0.21:8201"
+
 backend "consul" {
   address = "127.0.0.1:8500"
   path = "vault/"
@@ -393,15 +397,23 @@ backend "consul" {
 }
 
 listener "tcp" {
-  address = "node1:8200"
-  cluster_address = "0.0.0.0:8201"
+  address = "192.168.0.21:8200"
+  cluster_address = "192.168.0.21:8201"
   tls_disable = 1
 }
 
-telemetry {
-  statsite_address = "127.0.0.1:8125"
-  disable_hostname = true
+listener "tcp" {
+  address = "127.0.0.1:8200"
+  cluster_address = "127.0.0.1:8201"
+  tls_disable = 1
 }
+
+# telemetry {
+#   prometheus_retention_time = "30s"
+#   statsite_address = "127.0.0.1:8125"
+#   disable_hostname = true
+# }
+
 ```
 
 
