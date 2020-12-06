@@ -2,6 +2,11 @@ name = "NODE1"
 region = "global"
 datacenter = "LAB"
 
+data_dir = "/opt/nomad/data"
+
+log_level = "INFO"
+enable_syslog = true
+
 advertise {
   http = "192.168.0.21"
    rpc = "192.168.0.21"
@@ -16,7 +21,7 @@ acl {
 
 consul {
   # The address to the Consul agent.
-  address = "192.168.0.21:8500"
+  address = "127.0.0.1:8500"
 
   # The service name to register the server and client with Consul.
   server_service_name = "nomad-servers"
@@ -30,7 +35,8 @@ consul {
   client_auto_join = true
 }
 
-data_dir = "/opt/nomad/data"
-
-log_level = "INFO"
-enable_syslog = true
+# telemetry {
+#  publish_allocation_metrics = true
+#  publish_node_metrics       = true
+#  prometheus_metrics         = true
+# }
