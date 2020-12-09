@@ -67,7 +67,10 @@ The following text snippet needs to be added at the bottom of a reciently instal
 As a part of the installation process, podman and other OCI related container image supports is goint to be activated in Nomad. With that purpose, Nomad requires extra packages in addition to those provided by Raspbian install. Steps follows:
 
 ```
-TBD
+# Support for OCI, Podman and other container related tools/libraries
+echo 'deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/Raspbian_10/ /' | sudo tee /etc/apt/sources.list.d/devel_kubic_libcontainers_stable.list
+curl -L https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/Raspbian_10/Release.key | sudo apt-key add -
+sudo apt update -qq
 ```
 
 
