@@ -63,6 +63,13 @@ The following text snippet needs to be added at the bottom of a reciently instal
 192.168.xxx.yyy:/NFSroot/nomad /opt/NFS nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0
 ```
 
+## Changes to perfom on `/etc/apt`
+As a part of the installation process, podman and other OCI related container image supports is goint to be activated in Nomad. With that purpose, Nomad requires extra packages in addition to those provided by Raspbian install. Steps follows:
+
+```
+TBD
+```
+
 
 # Generic Docker installation
 ```
@@ -85,8 +92,8 @@ pip3 install docker-compose
 Follow this steps:
 
 ```
-wget https://releases.hashicorp.com/nomad/1.0.0-beta3/nomad_1.0.0-beta3_linux_arm.zip
-unzip nomad_1.0.0-beta3_linux_arm.zip
+wget https://releases.hashicorp.com/nomad/1.0.0/nomad_1.0.0_linux_arm.zip
+unzip nomad_1.0.0_linux_arm.zip
 mv nomad /usr/local/bin
 mkdir /etc/nomad.d
 mkdir /var/lib/nomad/
