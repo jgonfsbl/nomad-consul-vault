@@ -232,6 +232,12 @@ plugin "docker" {
     allow_caps = [ "ALL" ]
   }
 }
+
+plugin "raw_exec" {
+  config {
+    enabled = true
+  }
+}
 ```
 
 ### /etc/nomad.d/server.hcl
