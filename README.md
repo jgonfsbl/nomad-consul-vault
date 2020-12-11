@@ -219,7 +219,7 @@ client {
     read_only = false
   }
   server_join {
-    retry_join = [ "192.168.0.21", "192.168.0.22" ]
+    retry_join = [ "192.168.0.22", "192.168.0.23" ]
     retry_max = 3
     retry_interval = "15s"
   }  
