@@ -231,7 +231,7 @@ plugin "docker" {
   config {
     allow_caps = [ "ALL" ]
     volumes {
-      enabled = true
+      enabled = false
     }
   }
 }
