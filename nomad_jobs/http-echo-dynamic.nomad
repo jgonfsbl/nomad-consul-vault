@@ -19,7 +19,7 @@ job "http-echo-dynamic" {
     
       env {
         ECHO_MESSAGE = "${NOMAD_IP_http}:${NOMAD_PORT_http} - Meta: ${NOMAD_META_VERSION}"
-        SERVER_PORT = ${NOMAD_PORT_http}
+        SERVER_PORT = "${NOMAD_PORT_http}"
       }
       
       config {
@@ -41,7 +41,7 @@ job "http-echo-dynamic" {
         port = "http"
         tags = [
           "traefik.enable=true",
-          "traefik.http.routers.http.rule=Path(`/app`)",
+          "traefik.http.routers.http.rule=Path('/')",
           ]
         check {
           name = "alive"
