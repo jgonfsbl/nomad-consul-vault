@@ -16,7 +16,7 @@ job "http-echo-dynamic" {
   group "echo" {
     count = 1
     
-    task "server" {
+    task "echoserver" {
       driver = "docker"
     
       env {
@@ -39,11 +39,12 @@ job "http-echo-dynamic" {
       }       
       
       service {
-        name = "http-echo-dynamic"
+        name = "echoserver"
         port = "http"
         tags = [
           "traefik.enable=true",
-          "traefik.http.routers.http.rule=Host('local.0x30.io')"
+          "traefik.http.routers.echoserver.rule=Host('local.0x30.io')"
+          "traefik.http.routers.echoserver.entrypoints=http"
           ]
         check {
           name = "alive"
