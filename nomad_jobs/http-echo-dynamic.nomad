@@ -23,6 +23,7 @@ job "http-echo-dynamic" {
 
       env {
         ECHO_MESSAGE = "${NOMAD_IP_http}:${NOMAD_PORT_http} - Meta: ${NOMAD_META_VERSION}"
+        SERVER_PORT = 9000
       }
 
       resources {
