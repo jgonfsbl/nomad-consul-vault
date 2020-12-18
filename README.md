@@ -10,11 +10,18 @@ Hardware:
 - 1 x Mikrotik CCS6010 switch (8 GEth & 2 SFP+)
 - 1 x QNAP (NAS) server, for NFS exports
 
-Software:
+Principial Software:
 
 - HashiCorp Nomad
 - HashiCorp Consul
 - HashiCrop Vault
+
+Additional Software:
+
+- Docker
+- DNSmasq
+- Traefik
+
 
 
 ## Changes to perfom on `/etc/hosts`
