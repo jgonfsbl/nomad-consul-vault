@@ -72,17 +72,6 @@ EOF
         destination = "local/traefik.toml"
       }
 
-      service {
-        name = "traefik"
-        check {
-          name     = "alive"
-          type     = "tcp"
-          port     = "http"
-          interval = "10s"
-          timeout  = "2s"
-        }
-      }
-
       resources {
         // Hardware limits in this cluster
         cpu = 1000
@@ -93,6 +82,17 @@ EOF
           port "https"   { static = 443 }
           port "api"     { static = 8081 }
           port "metrics" { static = 8082 }
+        }
+      }
+      
+      service {
+        name = "traefik"
+        check {
+          name     = "alive"
+          type     = "tcp"
+          port     = "http"
+          interval = "10s"
+          timeout  = "2s"
         }
       }
 
