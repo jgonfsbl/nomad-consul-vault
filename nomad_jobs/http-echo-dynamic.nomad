@@ -44,7 +44,6 @@ job "http-echo-dynamic" {
         tags = [
           "traefik.enable=true",
           "traefik.http.routers.echo.rule=Host(`local.0x30.io`)",
-          "traefik.http.routers.echo.entrypoints=http,https",
           ]
         check {
           name = "alive"
