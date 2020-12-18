@@ -44,6 +44,7 @@ job "http-echo-dynamic" {
         tags = [
           "traefik.enable=true",
           "traefik.http.routers.http.rule=Path('/')",
+          "urlprefix-/traefik strip=/traefik"
           ]
         check {
           name = "alive"
