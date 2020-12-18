@@ -73,6 +73,42 @@ curl -L https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/
 sudo apt update -qq
 ```
 
+# Installation of `DNSmasq` package
+Install the package:
+```
+apt install dnsmasq -y
+cd /etc
+cp -p dnsmasq.conf dnsmasq.conf.original
+```
+
+Ensure this is part of your configuration file in `/etc/dnsmasq.conf`:
+```  
+# Configuration file for dnsmasq.
+
+# port=5353
+bind-interfaces
+
+domain-needed
+bogus-priv
+# no-resolv
+# no-poll
+
+server=/consul/127.0.0.1#8600
+
+cache-size=1000
+conf-dir=/etc/dnsmasq.d/,*.conf
+``` 
+
+Ensure `DNSmasq` is an enabled service with the following command:
+```  
+systemctl list-unit-files | grep enabled
+```  
+
+Finally, restart the `DNSmasq` service for changes to take effect:
+```  
+service dnsmasq restart
+``` 
+
 
 # Generic Docker installation
 ```
