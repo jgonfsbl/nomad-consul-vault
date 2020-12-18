@@ -40,9 +40,10 @@ job "http-echo-dynamic" {
         name = "http-echo-dynamic"
         port = "http8000"
         check {
-          type     = "tcp"
+          name = "alive"
+          type = "tcp"
           interval = "10s"
-          timeout  = "2s"
+          timeout = "2s"
         }
       }
 
