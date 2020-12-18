@@ -43,7 +43,7 @@ job "http-echo-dynamic" {
         port = "http"
         tags = [
           "traefik.enable=true",
-          "traefik.http.routers.echoserver.rule=Host('local.0x30.io')"
+          "traefik.http.routers.echoserver.rule=Host('local.0x30.io')",
           "traefik.http.routers.echoserver.entrypoints=http"
           ]
         check {
