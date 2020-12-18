@@ -11,8 +11,10 @@
 
 job "http-echo-dynamic" {
   datacenters = ["LAB"]  
+  type = "system"
+  
   group "echo" {
-    count = 3
+    count = 1
     
     task "server" {
       driver = "docker"
