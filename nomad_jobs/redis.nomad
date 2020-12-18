@@ -36,6 +36,18 @@ job "redis" {
         ]
       } 
 
+      resources {
+        // Hardware limits in this cluster
+        cpu = 1000
+        memory = 1024
+        network {
+          mbits = 10
+          port  "redis"  {
+            static = 6379
+          }
+        }
+      }      
+      
       service {
         // This is used to inform Consul a new service is available
         name = "redis"
@@ -48,18 +60,6 @@ job "redis" {
           timeout  = "2s"
         } 
       } 
-
-      resources {
-        // Hardware limits in this cluster
-        cpu = 1000
-        memory = 1024
-        network {
-          mbits = 10
-          port  "redis"  {
-            static = 6379
-          }
-        }
-      }
 
       restart {
         // The number of attempts to run the job within the specified interval
