@@ -90,6 +90,15 @@ curl -fsSL https://get.docker.com | sh
 
 
 
+# Manual `docker-compose` installation
+```
+apt install -y libffi-dev libssl-dev python3-dev python3 python3-pip python3-paramiko
+
+pip3 install docker-compose
+```
+
+
+
 # Installation of `DNSmasq` package
 Install the package:
 ```
@@ -125,13 +134,6 @@ Finally, restart the `DNSmasq` service for changes to take effect:
 ```  
 service dnsmasq restart
 ``` 
-
-# Manual `docker-compose` installation
-```
-apt install -y libffi-dev libssl-dev python3-dev python3 python3-pip python3-paramiko
-
-pip3 install docker-compose
-```
 
 
 
