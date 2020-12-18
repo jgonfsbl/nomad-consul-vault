@@ -17,13 +17,13 @@ job "http-echo-dynamic" {
     task "server" {
       driver = "docker"
     
-      config {
-        image = "teapow/http-echo:armv7"
-      }
-
       env {
         ECHO_MESSAGE = "${NOMAD_IP_http}:${NOMAD_PORT_http} - Meta: ${NOMAD_META_VERSION}"
-        SERVER_PORT = 9000
+        SERVER_PORT = ${NOMAD_PORT_http}
+      }
+      
+      config {
+        image = "teapow/http-echo:armv7"
       }
 
       resources {
