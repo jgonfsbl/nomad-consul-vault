@@ -13,7 +13,7 @@ job "http-echo-dynamic" {
   datacenters = ["LAB"]  
   type = "system"
   
-  group "echo" {
+  group "echogroup" {
     count = 1
     
     task "echoserver" {
@@ -39,7 +39,7 @@ job "http-echo-dynamic" {
       }       
       
       service {
-        name = "echoserver"
+        name = "http-echo-dynamic"
         port = "http"
         tags = [
           "traefik.enable=true",
