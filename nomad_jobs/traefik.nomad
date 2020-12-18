@@ -37,7 +37,6 @@ job "traefik" {
 
       template {
         data = <<EOF
-
 [entryPoints]
   [entryPoints.http]
   address = ":80"
@@ -63,7 +62,6 @@ job "traefik" {
   [providers.consulCatalog.endpoint]
     address = "http://127.0.0.1:8500"
     scheme = "http"
-
 EOF
         destination = "local/traefik.toml"
       }
