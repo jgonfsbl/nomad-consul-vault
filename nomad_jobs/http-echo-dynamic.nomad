@@ -39,6 +39,7 @@ job "http-echo-dynamic" {
       service {
         name = "http-echo-dynamic"
         port = "http"
+        tags = []
         check {
           name = "alive"
           type = "tcp"
