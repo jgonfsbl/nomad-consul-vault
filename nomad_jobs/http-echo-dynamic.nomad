@@ -21,24 +21,21 @@ job "http-echo-dynamic" {
         image = "teapow/http-echo:armv7"
       }
 
-      resources {
-        network {
-          mbits = 10
-          port "http8000" {
-            static = 8000
-          }
-        }
-      }
-
       env {
         ECHO_MESSAGE = "${NOMAD_IP_http8000}:${NOMAD_PORT_http8000} - Meta: ${NOMAD_META_VERSION}"
         SERVER_PORT = 8000
       }
 
-      meta {
-        VERSION = "v1.0"
-      }
-
+      resources {
+        // Hardware limits in this cluster       
+        cpu = 500
+        memory = 512        
+        network {
+          mbits = 100
+          port "http" {}
+        }
+      }       
+      
       service {
         name = "http-echo-dynamic"
         port = "http8000"
@@ -49,6 +46,10 @@ job "http-echo-dynamic" {
         }
       }
 
+      meta {
+        VERSION = "v1.0"
+      }      
+      
     } // EndTask
   } // EndGroup
 } // EndJob
