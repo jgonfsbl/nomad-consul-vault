@@ -109,6 +109,10 @@ EOF
         max_file_size = 15
       } 
 
+      meta {
+        VERSION = "v1.0"
+      }         
+      
     } // EndTask
   } // EndGroup
 } // EndJob
