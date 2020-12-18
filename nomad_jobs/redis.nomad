@@ -38,10 +38,10 @@ job "redis" {
 
       resources {
         // Hardware limits in this cluster
-        cpu = 1000
-        memory = 1024
+        cpu = 200
+        memory = 256
         network {
-          mbits = 10
+          mbits = 100
           port  "redis"  {
             static = 6379
           }
