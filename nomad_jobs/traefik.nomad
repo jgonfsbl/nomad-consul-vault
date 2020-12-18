@@ -14,11 +14,11 @@ job "traefik" {
 
   region = "global"
   datacenters = ["LAB"]
-  type = "service"
+  type = "system"
 
   group "proxy" {
     // Number of executions per task that will grouped into the same Nomad host 
-    count = 3
+    count = 1
 
     task "traefik" {
        driver = "docker"
@@ -28,10 +28,6 @@ job "traefik" {
         // This is the equivalent to a docker run command line
         image = "traefik:2.3.5"
         network_mode = "host"
-        port_map { http    = 80   } 
-        port_map { https   = 443  } 
-        port_map { api     = 8081 } 
-        port_map { metrics = 8082 } 
 
         volumes = [
           "local/traefik.toml:/etc/traefik/traefik.toml",
@@ -53,7 +49,7 @@ job "traefik" {
   address = ":8082"
 
 [ping]
-  entryPoint = "http"
+  entryPoint = "api"
 
 [api]
   dashboard = true
@@ -74,8 +70,8 @@ EOF
 
       resources {
         // Hardware limits in this cluster
-        cpu = 1000
-        memory = 1024
+        cpu = 200
+        memory = 256
         network {
           mbits = 100
           port "http"    { static = 80 }
