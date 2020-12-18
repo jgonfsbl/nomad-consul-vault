@@ -38,7 +38,7 @@ job "http-echo-dynamic" {
       
       service {
         name = "http-echo-dynamic"
-        port = "http8000"
+        port = "http"
         check {
           name = "alive"
           type = "tcp"
