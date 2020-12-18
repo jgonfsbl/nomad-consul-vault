@@ -40,6 +40,18 @@ job "postgres" {
         ]
       } 
 
+      resources {
+        // Hardware limits in this cluster
+        cpu = 1000
+        memory = 1024
+        network {
+          mbits = 100
+          port  "pgsql"  {
+            static = 5432
+          }
+        }
+      }      
+      
       service {
         // This is used to inform Consul a new service is available
         name = "postgres"
@@ -52,18 +64,6 @@ job "postgres" {
           timeout  = "2s"
         } 
       } 
-
-      resources {
-        // Hardware limits in this cluster
-        cpu = 1000
-        memory = 1024
-        network {
-          mbits = 10
-          port  "pgsql"  {
-            static = 5432
-          }
-        }
-      }
 
       restart {
         // The number of attempts to run the job within the specified interval
