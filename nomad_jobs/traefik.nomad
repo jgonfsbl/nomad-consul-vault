@@ -38,22 +38,55 @@ job "traefik" {
       template {
         data = <<EOF
 [entryPoints]
-  [entryPoints.http]
-  address = ":80"
-  [entryPoints.https]
-  address = ":443"
+  
+  [entryPoints.web]
+    address = ":80"
+    [entryPoints.web.http]
+      [entryPoints.web.http.redirections]
+        [entryPoints.web.http.redirections.entryPoint]
+          to = "websecure"
+          scheme = "https"
+  
+  [entryPoints.websecure]
+    address = ":443"
+    [entryPoints.websecure.http.tls]
+      certResolver = "leresolver"
+
   [entryPoints.api]
-  address = ":8081"
+    address = ":8081"
+  
   [entryPoints.metrics]
-  address = ":8082"
+    address = ":8082"
+  
+  [entryPoints.vpn]
+    address = ":993/udp"
+
+[http.routers]
+  [http.routers.redirecttohttps]
+    entryPoints = ["web"]
+    middlewares = ["httpsredirect"]
+
+[http.middlewares]
+  [http.middlewares.httpsredirect.redirectScheme]
+    scheme = "https"
 
 [ping]
   entryPoint = "api"
-
+  
 [api]
   dashboard = true
   insecure = true
   debug = true
+
+[tls.options]
+  [tls.options.default]
+    minVersion = "VersionTLS12"
+
+[certificatesResolvers.sample.acme]
+  email = "j@0x30.io"
+  storage = "acme.json"
+  [certificatesResolvers.sample.acme.httpChallenge]
+    entryPoint = "web"
 
 # Enable Consul Catalog configuration backend.
 [providers.consulCatalog]
@@ -72,10 +105,11 @@ EOF
         memory = 256
         network {
           mbits = 100
-          port "http"    { static = 80 }
-          port "https"   { static = 443 }
-          port "api"     { static = 8081 }
-          port "metrics" { static = 8082 }
+          port "web"       { static = 80 }
+          port "websecure" { static = 443 }
+          port "vpn"       { static = 993 }
+          port "api"       { static = 8081 }
+          port "metrics"   { static = 8082 }
         }
       }
       
@@ -84,7 +118,7 @@ EOF
         check {
           name     = "alive"
           type     = "tcp"
-          port     = "http"
+          port     = "web"
           interval = "10s"
           timeout  = "2s"
         }
@@ -110,3 +144,4 @@ EOF
     } // EndTask
   } // EndGroup
 } // EndJob
+
