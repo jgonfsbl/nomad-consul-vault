@@ -37,8 +37,10 @@ job "traefik" {
 
       template {
         data = <<EOF
+[global]
+  checkNewVersion = true
+
 [entryPoints]
-  
   [entryPoints.web]
     address = ":80"
     [entryPoints.web.http]
@@ -50,7 +52,7 @@ job "traefik" {
   [entryPoints.websecure]
     address = ":443"
     [entryPoints.websecure.http.tls]
-      certResolver = "leresolver"
+      certResolver = "le"
 
   [entryPoints.api]
     address = ":8081"
@@ -61,40 +63,42 @@ job "traefik" {
   [entryPoints.vpn]
     address = ":993/udp"
 
-[http.routers]
-  [http.routers.redirecttohttps]
-    entryPoints = ["web"]
-    middlewares = ["httpsredirect"]
+[providers]
+  [providers.consulCatalog]
+    prefix = "traefik"
+    exposedByDefault = false
+    [providers.consulCatalog.endpoint]
+      address = "http://127.0.0.1:8500"
+      scheme = "http"
 
-[http.middlewares]
-  [http.middlewares.httpsredirect.redirectScheme]
-    scheme = "https"
+[api]
+  insecure = true
+  dashboard = true
+  debug = true
 
 [ping]
   entryPoint = "api"
-  
-[api]
-  dashboard = true
-  insecure = true
-  debug = true
 
-[tls.options]
-  [tls.options.default]
-    minVersion = "VersionTLS12"
+[certificatesResolvers]
+  [certificatesResolvers.le]
+    [certificatesResolvers.le.acme]
+      email = "j@0x30.io"
+      storage = "acme.json"
+      keyType = "RSA4096"
+      tlsChallenge = true
 
-[certificatesResolvers.sample.acme]
-  email = "j@0x30.io"
-  storage = "acme.json"
-  [certificatesResolvers.sample.acme.httpChallenge]
-    entryPoint = "web"
-
-# Enable Consul Catalog configuration backend.
-[providers.consulCatalog]
-  prefix = "traefik"
-  exposedByDefault = false
-  [providers.consulCatalog.endpoint]
-    address = "http://127.0.0.1:8500"
-    scheme = "http"
+[tls]
+  [tls.options]
+    [tls.options.default]
+      minVersion = "VersionTLS12"
+      cipherSuites = [
+          "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+          "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+          "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+          "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+          "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256",
+          "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+      ]
 EOF
         destination = "local/traefik.toml"
       }
