@@ -54,15 +54,15 @@ job "traefik" {
     [entryPoints.websecure.http.tls]
       certResolver = "le"
 
+  [entryPoints.vpn]
+    address = ":993/udp"
+
   [entryPoints.api]
     address = ":8081"
   
   [entryPoints.metrics]
     address = ":8082"
   
-  [entryPoints.vpn]
-    address = ":993/udp"
-
 [providers]
   [providers.consulCatalog]
     prefix = "traefik"
@@ -70,6 +70,8 @@ job "traefik" {
     [providers.consulCatalog.endpoint]
       address = "http://127.0.0.1:8500"
       scheme = "http"
+      # scheme = "https"
+      # token = "per-request_acl_token"
 
 [api]
   insecure = true
