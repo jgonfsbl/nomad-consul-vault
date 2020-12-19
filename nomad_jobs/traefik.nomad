@@ -70,8 +70,6 @@ job "traefik" {
     [providers.consulCatalog.endpoint]
       address = "http://127.0.0.1:8500"
       scheme = "http"
-      # scheme = "https"
-      # token = "per-request_acl_token"
 
 [api]
   insecure = true
@@ -87,7 +85,7 @@ job "traefik" {
       email = "j@0x30.io"
       storage = "acme.json"
       keyType = "RSA4096"
-      tlsChallenge = true
+    [certificatesResolvers.le.acme.tlsChallenge] 
 
 [tls]
   [tls.options]
