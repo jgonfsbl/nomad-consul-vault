@@ -23,6 +23,12 @@ job "traefik" {
     task "traefik" {
        driver = "docker"
        // This is a Docker task using the local Docker daemon 
+
+      env {
+        // These are environment variables to pass to the task/container below
+        CLOUDNS_AUTH_ID="nnnn"
+        CLOUDNS_AUTH_PASSWORD="LongStringOfTextGeneratedByClouDNS"
+      } 
       
       config {
         // This is the equivalent to a docker run command line
@@ -38,66 +44,62 @@ job "traefik" {
       template {
         data = <<EOF
 [global]
-  checkNewVersion = true
+checkNewVersion = true
 
 [entryPoints]
   [entryPoints.web]
-    address = ":80"
+  address = ":80"
     [entryPoints.web.http]
       [entryPoints.web.http.redirections]
         [entryPoints.web.http.redirections.entryPoint]
-          to = "websecure"
-          scheme = "https"
-  
+        to = "websecure"
+        scheme = "https"
   [entryPoints.websecure]
-    address = ":443"
+  address = ":443"
     [entryPoints.websecure.http.tls]
-      certResolver = "le"
-
+    certResolver = "le"
   [entryPoints.vpn]
-    address = ":993/udp"
-
+  address = ":993/udp"
   [entryPoints.api]
-    address = ":8081"
-  
+  address = ":8081"
   [entryPoints.metrics]
-    address = ":8082"
+  address = ":8082"
   
 [providers]
   [providers.consulCatalog]
-    prefix = "traefik"
-    exposedByDefault = false
+  prefix = "traefik"
+  exposedByDefault = false
     [providers.consulCatalog.endpoint]
-      address = "http://127.0.0.1:8500"
-      scheme = "http"
+    address = "http://127.0.0.1:8500"
+    scheme = "http"
 
 [api]
-  insecure = true
-  dashboard = true
-  debug = true
-
-[ping]
-  entryPoint = "api"
+insecure = true
+dashboard = true
+debug = true
 
 [certificatesResolvers]
   [certificatesResolvers.le]
     [certificatesResolvers.le.acme]
-      email = "j@0x30.io"
-      storage = "acme.json"
-      keyType = "RSA4096"
-    [certificatesResolvers.le.acme.tlsChallenge] 
+    email = "user@mail.tld"
+    storage = "acme.json"
+    keyType = "RSA4096"
+    caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
+      [certificatesResolvers.le.acme.dnsChallenge]    
+      provider = "cloudns"
+      delayBeforeCheck = 300
 
 [tls]
   [tls.options]
     [tls.options.default]
-      minVersion = "VersionTLS12"
-      cipherSuites = [
-          "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
-          "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
-          "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
-          "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
-          "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256",
-          "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+    minVersion = "VersionTLS12"
+    cipherSuites = [
+      "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+      "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+      "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+      "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+      "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256",
+      "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
       ]
 EOF
         destination = "local/traefik.toml"
@@ -109,22 +111,22 @@ EOF
         memory = 256
         network {
           mbits = 100
-          port "web"       { static = 80 }
+          port "web" { static = 80 }
           port "websecure" { static = 443 }
-          port "vpn"       { static = 993 }
-          port "api"       { static = 8081 }
-          port "metrics"   { static = 8082 }
+          port "vpn" { static = 993 }
+          port "api" { static = 8081 }
+          port "metrics" { static = 8082 }
         }
       }
       
       service {
         name = "traefik"
         check {
-          name     = "alive"
-          type     = "tcp"
-          port     = "web"
+          name = "alive"
+          type = "tcp"
+          port = "web"
           interval = "10s"
-          timeout  = "2s"
+          timeout = "2s"
         }
       }
 
