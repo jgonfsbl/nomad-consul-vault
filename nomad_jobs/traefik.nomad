@@ -26,7 +26,7 @@ job "traefik" {
 
       env {
         // These are environment variables to pass to the task/container below
-        CLOUDNS_AUTH_ID="nnnnn"
+        CLOUDNS_AUTH_ID="nnnnnn"
         CLOUDNS_AUTH_PASSWORD="LongStringOfTextAsTokenComesHere"
         CLOUDNS_POLLING_INTERVAL="80"
       } 
@@ -38,7 +38,7 @@ job "traefik" {
 
         volumes = [
           "local/traefik.toml:/etc/traefik/traefik.toml",
-          "/opt/NFS/traefik/acme.json:/acme.json",
+          "/opt/NFS/traefik/acme.json:/etc/traefik/acme.json",
         ]
       } 
 
@@ -108,7 +108,7 @@ entryPoint = "metrics"
   [certificatesResolvers.le]
     [certificatesResolvers.le.acme]
     email = "user@email.tld"
-    storage = "/acme.json"
+    storage = "/etc/traefik/acme.json"
     keyType = "RSA4096"
     caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
       [certificatesResolvers.le.acme.dnsChallenge]    
