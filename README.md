@@ -526,6 +526,8 @@ If everything works properly, then, enable the service system-wide using command
 ## Vault unseal
 When Vault is first installed it comes sealed, which essentially means, it cannot be used. Vault needs to be unsealed to allow secrets to be created.
 
+>__NOTE:__ IN ORDER TO SIMPLIFY UNSEAL PROCEDURE, GO TO THE VAULT WEB USER INTERFACE AND FOLLOW STEPS INDICATED. 
+
 Once Vault is unsealed you will receive one or more keys and a root token. You must keep this information in a safe place. Later, every time Vault gets restarted Vault will initialize again in sealed mode, so, you will need to unseal Vault again. If you want to automate this step you will require something like the following script.
 
 
