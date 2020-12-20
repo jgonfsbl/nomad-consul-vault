@@ -26,13 +26,14 @@ job "traefik" {
 
       env {
         // These are environment variables to pass to the task/container below
-        CLOUDNS_AUTH_ID="nnnn"
-        CLOUDNS_AUTH_PASSWORD="LongStringOfTextGeneratedByClouDNS"
+        CLOUDNS_AUTH_ID="nnnnnn"
+        CLOUDNS_AUTH_PASSWORD="LongStringOfTextWouldComeHereAsAKey"
+        CLOUDNS_POLLING_INTERVAL="80"
       } 
       
       config {
         // This is the equivalent to a docker run command line
-        image = "traefik:2.3.5"
+        image = "traefik:2.3.6"
         network_mode = "host"
 
         volumes = [
@@ -64,30 +65,12 @@ checkNewVersion = true
   address = ":8081"
   [entryPoints.metrics]
   address = ":8082"
-  
-[providers]
-  [providers.consulCatalog]
-  prefix = "traefik"
-  exposedByDefault = false
-    [providers.consulCatalog.endpoint]
-    address = "http://127.0.0.1:8500"
-    scheme = "http"
 
-[api]
-insecure = true
-dashboard = true
-debug = true
-
-[certificatesResolvers]
-  [certificatesResolvers.le]
-    [certificatesResolvers.le.acme]
-    email = "user@mail.tld"
-    storage = "acme.json"
-    keyType = "RSA4096"
-    caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
-      [certificatesResolvers.le.acme.dnsChallenge]    
-      provider = "cloudns"
-      delayBeforeCheck = 300
+[http]
+  [http.routers]
+    [http.routers.api]
+    rule = "Host(`local.0x30.io`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+    service = "api@internal"
 
 [tls]
   [tls.options]
@@ -100,7 +83,37 @@ debug = true
       "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
       "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256",
       "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-      ]
+    ]
+
+[log]
+level = "DEBUG"
+format = "common"
+
+[api]
+insecure = true
+dashboard = true
+
+[ping]
+entryPoint = "metrics"
+
+[providers]
+  [providers.consulCatalog]
+  prefix = "traefik"
+  exposedByDefault = false
+    [providers.consulCatalog.endpoint]
+    address = "http://127.0.0.1:8500"
+    scheme = "http"
+
+[certificatesResolvers]
+  [certificatesResolvers.le]
+    [certificatesResolvers.le.acme]
+    email = "user@email.tld"
+    storage = "acme.json"
+    keyType = "RSA4096"
+    caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
+      [certificatesResolvers.le.acme.dnsChallenge]    
+      provider = "cloudns"
+      delayBeforeCheck = 300
 EOF
         destination = "local/traefik.toml"
       }
