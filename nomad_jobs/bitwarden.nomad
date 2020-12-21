@@ -71,7 +71,11 @@ job "bitwarden" {
         // This is used to inform Consul a new service is available
         name = "bitwarden"
         port = "bw_web"
-        tags = ["bitwarden"]
+        tags = [
+          "bitwarden",
+          "traefik.enable=true",
+          "traefik.http.routers.echo.rule=Host(`bw.0x30.io`)",
+          ]        
         check {
           name = "alive"
           type = "tcp"
@@ -95,6 +99,7 @@ job "bitwarden" {
 
       meta {
         VERSION = "v1.0"
+        LOCATION = "LAB"
       }         
       
     } // EndTask
