@@ -27,7 +27,7 @@ job "traefik" {
       env {
         // These are environment variables to pass to the task/container below
         CLOUDNS_AUTH_ID="nnnnnnnn"
-        CLOUDNS_AUTH_PASSWORD="LongStringOfTextUsedAsTokenComesHere"
+        CLOUDNS_AUTH_PASSWORD="LongStringOfTextAsTokenComesHere"
       } 
       
       config {
@@ -45,6 +45,7 @@ job "traefik" {
         data = <<EOF
 [global]
 checkNewVersion = true
+sendAnonymousUsage = false
 
 [entryPoints]
   [entryPoints.web]
@@ -70,7 +71,9 @@ checkNewVersion = true
   [http.routers]
     [http.routers.api]
     rule = "Host(`local.0x30.io`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+    entrypoints = ["websecure"]
     service = "api@internal"
+      [http.routers.api.tls]
 
 [tls]
   [tls.options]
@@ -86,7 +89,7 @@ checkNewVersion = true
     ]
 
 [log]
-level = "DEBUG"
+level = "ERROR"
 format = "common"
 
 [api]
@@ -110,8 +113,7 @@ entryPoint = "metrics"
     email = "user@email.tld"
     storage = "/acme.json"
     keyType = "RSA4096"
-    caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
-    # For Production use --> caServer = "https://acme-v02.api.letsencrypt.org/directory"
+    caServer = "https://acme-v02.api.letsencrypt.org/directory"
       [certificatesResolvers.le.acme.dnsChallenge]    
       provider = "cloudns"
       delayBeforeCheck = 80
