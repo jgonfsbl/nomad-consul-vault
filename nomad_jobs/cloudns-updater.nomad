@@ -64,7 +64,8 @@ job "cloudns" {
 
       meta {
         VERSION = "v1.0"
-      }         
+        LOCATION = "LAB"
+      }              
       
     } // EndTask
   } // EndGroup
