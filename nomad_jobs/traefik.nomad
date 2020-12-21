@@ -114,7 +114,7 @@ entryPoint = "metrics"
       [certificatesResolvers.le.acme.dnsChallenge]    
       provider = "cloudns"
       delayBeforeCheck = 80
-      resolvers = ["85.136.96.66:53", "185.136.97.66:53", "185.136.98.66:53", "185.136.99.66:53"]
+      resolvers = ["185.136.96.66:53", "185.136.97.66:53", "185.136.98.66:53", "185.136.99.66:53"]
 EOF
         destination = "local/traefik.toml"
       }
