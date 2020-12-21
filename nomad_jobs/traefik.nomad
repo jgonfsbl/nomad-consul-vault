@@ -56,8 +56,9 @@ checkNewVersion = true
         scheme = "https"
   [entryPoints.websecure]
   address = ":443"
-    [entryPoints.websecure.http.tls]
-    certResolver = "le"
+    [entryPoints.websecure.http]
+      [entryPoints.websecure.http.tls]
+      certResolver = "le"
   [entryPoints.vpn]
   address = ":993/udp"
   [entryPoints.api]
@@ -110,7 +111,7 @@ entryPoint = "metrics"
     storage = "/acme.json"
     keyType = "RSA4096"
     caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
-    # Production --> caServer = "https://acme-v02.api.letsencrypt.org/directory"
+    # For Production use --> caServer = "https://acme-v02.api.letsencrypt.org/directory"
       [certificatesResolvers.le.acme.dnsChallenge]    
       provider = "cloudns"
       delayBeforeCheck = 80
