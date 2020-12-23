@@ -38,7 +38,7 @@ job "traefik" {
           web = 80
           websecure = 443
           traefik = 8081
-        } 
+        }
         volumes = [
           "local/traefik.toml:/etc/traefik/traefik.toml",
           "/opt/NFS/traefik/acme.json:/acme.json",
@@ -72,9 +72,9 @@ sendAnonymousUsage = false
   entryPoint = "traefik"
 
 [api]
-    dashboard = true
-    insecure = true
-    debug = true
+  dashboard = true
+  insecure = true
+  debug = true
 
 [tls]
   [tls.options]
@@ -125,6 +125,15 @@ EOF
 
       service {
         name = "traefik"
+        tags = [
+          "traefik.enable=true",
+          "traefik.http.routers.traefik.tls=true",
+          "traefik.http.routers.traefik.tls.certResolver=le",
+          "traefik.http.routers.traefik.entrypoints=websecure",
+          "traefik.http.routers.traefik.rule=Host(`traefik.0x30.io`)",
+          "traefik.http.routers.traefik.service=api@internal",
+          "traefik.http.services.traefik.loadbalancer.server.port=traefik",
+        ]
         check {
           name = "alive"
           type = "tcp"
