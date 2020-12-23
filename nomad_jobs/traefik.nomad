@@ -2,7 +2,7 @@
 // Jonathan Gonzalez
 // j@0x30.io
 // https://github.com/EA1HET
-// Nomad v1.0.0 
+// Nomad v1.0.0
 // Plan date: 2020-12-15
 // Job version: 1.0
 //
@@ -17,19 +17,19 @@ job "traefik" {
   type = "system"
 
   group "proxy" {
-    // Number of executions per task that will grouped into the same Nomad host 
+    // Number of executions per task that will grouped into the same Nomad host
     count = 1
 
     task "traefik" {
-       driver = "docker"
-       // This is a Docker task using the local Docker daemon 
+      driver = "docker"
+      // This is a Docker task using the local Docker daemon
 
       env {
         // These are environment variables to pass to the task/container below
         CLOUDNS_AUTH_ID="nnnnnnnn"
-        CLOUDNS_AUTH_PASSWORD="LongStringOfTextAsTokenComesHere"
-      } 
-      
+        CLOUDNS_AUTH_PASSWORD="LongStringOfTextThatWorksAsAToken"
+      }
+
       config {
         // This is the equivalent to a docker run command line
         image = "traefik:2.3.6"
@@ -39,15 +39,17 @@ job "traefik" {
           "local/traefik.toml:/etc/traefik/traefik.toml",
           "/opt/NFS/traefik/acme.json:/acme.json",
         ]
-      } 
+      }
 
       template {
+        destination = "local/traefik.toml"
         data = <<EOF
 [global]
 checkNewVersion = true
 sendAnonymousUsage = false
 
 [entryPoints]
+
   [entryPoints.web]
   address = ":80"
     [entryPoints.web.http]
@@ -55,25 +57,34 @@ sendAnonymousUsage = false
         [entryPoints.web.http.redirections.entryPoint]
         to = "websecure"
         scheme = "https"
+  
   [entryPoints.websecure]
   address = ":443"
     [entryPoints.websecure.http]
       [entryPoints.websecure.http.tls]
       certResolver = "le"
-  [entryPoints.vpn]
-  address = ":993/udp"
-  [entryPoints.api]
+
+  [entryPoints.traefik]
   address = ":8081"
+
   [entryPoints.metrics]
   address = ":8082"
 
-[http]
-  [http.routers]
-    [http.routers.api]
-    rule = "Host(`local.0x30.io`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
-    entrypoints = ["websecure"]
-    service = "api@internal"
-      [http.routers.api.tls]
+[ping]
+  entryPoint = "traefik"
+
+[api]
+    dashboard = true
+    insecure = true
+    debug = true
+
+[providers]
+  [providers.consulCatalog]
+  prefix = "traefik"
+  exposedByDefault = false
+    [providers.consulCatalog.endpoint]
+    address = "http://127.0.0.1:8500"
+    scheme = "http"
 
 [tls]
   [tls.options]
@@ -88,60 +99,43 @@ sendAnonymousUsage = false
       "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
     ]
 
-[log]
-level = "ERROR"
-format = "common"
-
-[api]
-insecure = true
-dashboard = true
-
-[ping]
-entryPoint = "metrics"
-
-[providers]
-  [providers.consulCatalog]
-  prefix = "traefik"
-  exposedByDefault = false
-    [providers.consulCatalog.endpoint]
-    address = "http://127.0.0.1:8500"
-    scheme = "http"
-
 [certificatesResolvers]
   [certificatesResolvers.le]
     [certificatesResolvers.le.acme]
-    email = "user@email.tld"
+    email = "user@domain.tld"
     storage = "/acme.json"
     keyType = "RSA4096"
-    caServer = "https://acme-v02.api.letsencrypt.org/directory"
-      [certificatesResolvers.le.acme.dnsChallenge]    
+    caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
+      [certificatesResolvers.le.acme.dnsChallenge]
       provider = "cloudns"
       delayBeforeCheck = 80
       resolvers = ["185.136.96.66:53", "185.136.97.66:53", "185.136.98.66:53", "185.136.99.66:53"]
 EOF
-        destination = "local/traefik.toml"
       }
 
       resources {
         // Hardware limits in this cluster
-        cpu = 200
-        memory = 256
+        cpu = 1000
+        memory = 1024
         network {
           mbits = 100
-          port "web" { static = 80 }
-          port "websecure" { static = 443 }
-          port "vpn" { static = 993 }
-          port "api" { static = 8081 }
-          port "metrics" { static = 8082 }
+          port "web"       { static = 80   }
+          port "websecure" { static = 443  }
+          port "traefik"   { static = 8081 }
+          port "metrics"   { static = 8082 }
         }
       }
-      
+
       service {
         name = "traefik"
+        tags = [
+          "traefik.enable=true",
+          "traefik.http.routers.traefik.rule=Host(`traefik.0x30.io`)",
+        ]        
         check {
           name = "alive"
           type = "tcp"
-          port = "web"
+          port = "traefik"
           interval = "10s"
           timeout = "2s"
         }
@@ -151,20 +145,20 @@ EOF
         // The number of attempts to run the job within the specified interval
         attempts = 10
         interval = "5m"
-        delay = "25s"
+        delay = "10s"
         mode = "delay"
-      } 
+      }
 
       logs {
         max_files = 5
         max_file_size = 15
-      } 
+      }
 
       meta {
         VERSION = "v1.0"
         LOCATION = "LAB"
-      }             
-      
+      }
+
     } // EndTask
   } // EndGroup
 } // EndJob
