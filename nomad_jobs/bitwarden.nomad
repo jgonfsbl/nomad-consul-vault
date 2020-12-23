@@ -32,12 +32,12 @@ job "bitwarden" {
         SIGNUPS_ALLOWED="true"
         INVITATIONS_ALLOWED="true"
         SMTP_HOST=""
-        SMTP_FROM=""
+        SMTP_FROM="o"
         SMTP_PORT=587
         SMTP_SSL="true"
         SMTP_USERNAME=""
         SMTP_PASSWORD=""
-        SMTP_FROM_NAME="Bitwarden Notification"
+        SMTP_FROM_NAME=""
         PYTHONUNBUFFERED=0
       }
 
@@ -70,10 +70,9 @@ job "bitwarden" {
         name = "bitwarden"
         port = "bw_web"
         tags = [
-          "bitwarden",
           "traefik.enable=true",
           "traefik.http.routers.bitwarden.rule=Host(`bw.0x30.io`)",
-          ]
+        ]
         check {
           name = "alive"
           type = "tcp"
