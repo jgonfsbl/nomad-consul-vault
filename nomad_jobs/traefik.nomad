@@ -132,7 +132,7 @@ EOF
           "traefik.http.routers.traefik.entrypoints=websecure",
           "traefik.http.routers.traefik.rule=Host(`traefik.0x30.io`)",
           "traefik.http.routers.traefik.service=api@internal",
-          "traefik.http.services.traefik.loadbalancer.server.port=traefik",
+          "traefik.http.services.traefik.loadbalancer.server.port=8081",
         ]
         check {
           name = "alive"
