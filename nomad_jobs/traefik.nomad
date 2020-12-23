@@ -27,14 +27,13 @@ job "traefik" {
       env {
         // These are environment variables to pass to the task/container below
         CLOUDNS_AUTH_ID="nnnnnnnn"
-        CLOUDNS_AUTH_PASSWORD="LongStringOfTextThatWorksAsAToken"
+        CLOUDNS_AUTH_PASSWORD="LongStringOfTextUsedAsToken"
       }
 
       config {
         // This is the equivalent to a docker run command line
         image = "traefik:2.3.6"
         network_mode = "host"
-
         volumes = [
           "local/traefik.toml:/etc/traefik/traefik.toml",
           "/opt/NFS/traefik/acme.json:/acme.json",
@@ -49,7 +48,6 @@ checkNewVersion = true
 sendAnonymousUsage = false
 
 [entryPoints]
-
   [entryPoints.web]
   address = ":80"
     [entryPoints.web.http]
@@ -57,34 +55,21 @@ sendAnonymousUsage = false
         [entryPoints.web.http.redirections.entryPoint]
         to = "websecure"
         scheme = "https"
-  
   [entryPoints.websecure]
   address = ":443"
     [entryPoints.websecure.http]
       [entryPoints.websecure.http.tls]
       certResolver = "le"
-
-  [entryPoints.traefik]
+  [entryPoints.dashboard]
   address = ":8081"
 
-  [entryPoints.metrics]
-  address = ":8082"
-
 [ping]
-  entryPoint = "traefik"
+  entryPoint = "dashboard"
 
 [api]
     dashboard = true
     insecure = true
     debug = true
-
-[providers]
-  [providers.consulCatalog]
-  prefix = "traefik"
-  exposedByDefault = false
-    [providers.consulCatalog.endpoint]
-    address = "http://127.0.0.1:8500"
-    scheme = "http"
 
 [tls]
   [tls.options]
@@ -98,6 +83,14 @@ sendAnonymousUsage = false
       "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256",
       "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
     ]
+
+[providers]
+  [providers.consulCatalog]
+  prefix = "traefik"
+  exposedByDefault = false
+    [providers.consulCatalog.endpoint]
+    address = "http://127.0.0.1:8500"
+    scheme = "http"
 
 [certificatesResolvers]
   [certificatesResolvers.le]
@@ -121,21 +114,16 @@ EOF
           mbits = 100
           port "web"       { static = 80   }
           port "websecure" { static = 443  }
-          port "traefik"   { static = 8081 }
-          port "metrics"   { static = 8082 }
+          port "dashboard" { static = 8081 }
         }
       }
 
       service {
         name = "traefik"
-        tags = [
-          "traefik.enable=true",
-          "traefik.http.routers.traefik.rule=Host(`traefik.0x30.io`)",
-        ]        
         check {
           name = "alive"
           type = "tcp"
-          port = "traefik"
+          port = "dashboard"
           interval = "10s"
           timeout = "2s"
         }
