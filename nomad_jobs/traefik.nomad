@@ -80,6 +80,7 @@ sendAnonymousUsage = false
   [tls.options]
     [tls.options.default]
     minVersion = "VersionTLS12"
+    sniStrict = true
     cipherSuites = [
       "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
       "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
@@ -87,6 +88,10 @@ sendAnonymousUsage = false
       "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
       "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256",
       "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+    ]
+    curvePreferences = [
+      "CurveP521",
+      "CurveP384",
     ]
 
 [providers]
