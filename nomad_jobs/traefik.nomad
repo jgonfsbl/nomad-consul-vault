@@ -34,6 +34,11 @@ job "traefik" {
         // This is the equivalent to a docker run command line
         image = "traefik:2.3.6"
         network_mode = "host"
+        port_map {
+          web = 80
+          websecure = 443
+          traefik = 8081
+        } 
         volumes = [
           "local/traefik.toml:/etc/traefik/traefik.toml",
           "/opt/NFS/traefik/acme.json:/acme.json",
@@ -60,11 +65,11 @@ sendAnonymousUsage = false
     [entryPoints.websecure.http]
       [entryPoints.websecure.http.tls]
       certResolver = "le"
-  [entryPoints.dashboard]
+  [entryPoints.traefik]
   address = ":8081"
 
 [ping]
-  entryPoint = "dashboard"
+  entryPoint = "traefik"
 
 [api]
     dashboard = true
@@ -114,7 +119,7 @@ EOF
           mbits = 100
           port "web"       { static = 80   }
           port "websecure" { static = 443  }
-          port "dashboard" { static = 8081 }
+          port "traefik"   { static = 8081 }
         }
       }
 
@@ -123,7 +128,7 @@ EOF
         check {
           name = "alive"
           type = "tcp"
-          port = "dashboard"
+          port = "traefik"
           interval = "10s"
           timeout = "2s"
         }
