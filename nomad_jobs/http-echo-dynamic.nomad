@@ -12,6 +12,7 @@
 job "echo" {
   datacenters = ["LAB"]
   type = "system"
+  priority = 20
 
   group "grp-echo" {
     count = 1
@@ -30,21 +31,20 @@ job "echo" {
 
       resources {
         // Hardware limits in this cluster
-        cpu = 500
-        memory = 512
+        cpu = 50
+        memory = 10
         network {
-          mbits = 100
+          mbits = 10
           port "http" {}
         }
       }
 
       service {
-        name = "web"
+        name = "echo"
         port = "http"
         tags = [
-          "traefik.enable=true",
-          "traefik.http.routers.web.rule=Host(`local.0x30.io`)",
-        ]
+          "echo",
+          ]
         check {
           name = "alive"
           type = "http"
