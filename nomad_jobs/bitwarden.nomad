@@ -15,6 +15,7 @@ job "bitwarden" {
   region = "global"
   datacenters = ["LAB"]
   type = "service"
+  priority = 80
 
   group "security" {
     // Number of executions per task that will grouped into the same Nomad host
@@ -32,12 +33,12 @@ job "bitwarden" {
         SIGNUPS_ALLOWED="true"
         INVITATIONS_ALLOWED="true"
         SMTP_HOST=""
-        SMTP_FROM="o"
+        SMTP_FROM=""
         SMTP_PORT=587
         SMTP_SSL="true"
         SMTP_USERNAME=""
         SMTP_PASSWORD=""
-        SMTP_FROM_NAME=""
+        SMTP_FROM_NAME="Bitwarden Notification"
         PYTHONUNBUFFERED=0
       }
 
@@ -56,10 +57,10 @@ job "bitwarden" {
 
       resources {
         // Hardware limits in this cluster
-        cpu = 300
-        memory = 384
+        cpu = 50
+        memory = 10
         network {
-          mbits = 100
+          mbits = 10
           port "bw_web" {}
           port "bw_wss" {}
         }
@@ -70,9 +71,8 @@ job "bitwarden" {
         name = "bitwarden"
         port = "bw_web"
         tags = [
-          "traefik.enable=true",
-          "traefik.http.routers.bitwarden.rule=Host(`bw.0x30.io`)",
-        ]
+          "bitwarden",
+          ]
         check {
           name = "alive"
           type = "tcp"
