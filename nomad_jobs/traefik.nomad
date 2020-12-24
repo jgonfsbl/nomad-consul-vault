@@ -27,7 +27,7 @@ job "traefik" {
       env {
         // These are environment variables to pass to the task/container below
         CLOUDNS_AUTH_ID="nnnnnnnn"
-        CLOUDNS_AUTH_PASSWORD="LongStringOfTextUsedAsToken"
+        CLOUDNS_AUTH_PASSWORD="LongStringActingAsToken"
       }
 
       config {
@@ -105,7 +105,7 @@ sendAnonymousUsage = false
 [certificatesResolvers]
   [certificatesResolvers.le]
     [certificatesResolvers.le.acme]
-    email = "user@domain.tld"
+    email = "j@0x30.io"
     storage = "/acme.json"
     keyType = "RSA4096"
     caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
@@ -118,8 +118,8 @@ EOF
 
       resources {
         // Hardware limits in this cluster
-        cpu = 1000
-        memory = 1024
+        cpu = 2000
+        memory = 2048
         network {
           mbits = 100
           port "web"       { static = 80   }
