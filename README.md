@@ -20,7 +20,14 @@ Additional Software:
 
 - Docker
 - DNSmasq
+- HAProxy
 - Traefik
+- NIGNX
+- Redis
+- PostgreSQL
+- MariaDB
+- Bitwarden
+- ClouDNS Updater
 
 
 
