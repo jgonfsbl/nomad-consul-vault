@@ -6,7 +6,7 @@
 // Plan date: 2020-12-20
 // Job version: 1.0
 //
-// An HAProxy load balancer system (INLINE CONFIG - NO VAULT)
+// An HAProxy load balancer system
 
 
 job "haproxy" {
@@ -15,6 +15,7 @@ job "haproxy" {
   region = "global"
   datacenters = ["LAB"]
   type = "system"
+  priority = 100
 
   group "grp-haproxy" {
     // Number of executions per task that will grouped into the same Nomad host
@@ -36,8 +37,9 @@ job "haproxy" {
         port_map {
           http  = 80
           https = 443
-          redis = 6379
+          mysql = 3306
           pgsql = 5432
+          redis = 6379
           stats = 9999
         }
         volumes = [
@@ -108,7 +110,7 @@ listen STATS
     stats hide-version
     stats realm HAProxy\ Stats
     stats uri /
-    stats refresh 120s
+    stats refresh 60s
     no log
 
 
@@ -116,11 +118,11 @@ listen STATS
 # main frontend which proxys to the backends
 #---------------------------------------------------------------------
 
-frontend FE_REDIS
+frontend FE_MYSQL
   mode tcp
   option tcplog
-  bind ${NOMAD_IP_http}:6379
-  default_backend BE_REDIS
+  bind ${NOMAD_IP_http}:3306
+  default_backend BE_MYSQL
 
 frontend FE_PGSQL
   mode tcp
@@ -128,36 +130,56 @@ frontend FE_PGSQL
   bind ${NOMAD_IP_http}:5432
   default_backend BE_PGSQL
 
+frontend FE_REDIS
+  mode tcp
+  option tcplog
+  bind ${NOMAD_IP_http}:6379
+  default_backend BE_REDIS
+
 frontend FE_HTTP
   bind ${NOMAD_IP_http}:80
   option forwardfor except 127.0.0.0/8
   http-request set-header X-Client-IP req.hdr_ip([X-Forwarded-For])
   http-request add-header X-Forwarded-Proto http
     ## LetsEncrypt Certificates
-    acl is_letsencrypt path_beg /.well-known/acme-challenge/
-    use_backend BE_LE if is_letsencrypt
-  default_backend BE_WEBFARM
+    ## acl is_letsencrypt path_beg /.well-known/acme-challenge/
+    ## use_backend BE_LE if is_letsencrypt
+  default_backend BE_HYPRIOT
 
 frontend FE_HTTPS
   bind ${NOMAD_IP_http}:443 ssl crt-list /usr/local/etc/haproxy/crt-list.txt
   option forwardfor except 127.0.0.0/8
   http-request set-header X-Client-IP req.hdr_ip([X-Forwarded-For])
   http-request add-header X-Forwarded-Proto https
-    ## Circuit Braker
-    use_backend BE_CBRAKER if { ssl_fc_sni -f /usr/local/etc/haproxy/cbraker.txt }
-  default_backend BE_WEBFARM
+    ## Bitwarden
+    use_backend BE_BITWARDEN if { ssl_fc_sni bw.0x30.io }
+    ## Echo Service
+    use_backend BE_ECHO if { ssl_fc_sni echo.0x30.io }
+  default_backend BE_HYPRIOT
 
 
 #---------------------------------------------------------------------
 # backends
 #---------------------------------------------------------------------
 
-backend BE_LE
- server letsencrypt 127.0.0.1:8888
+## backend BE_LE
+##  server letsencrypt 127.0.0.1:8888
 
-backend BE_CBRAKER
-  redirect scheme https code 301 if !{ ssl_fc }
-  server circuit-braker ${NOMAD_IP_http}:8080 check
+backend BE_MYSQL
+  mode tcp
+  timeout client 10800s
+  timeout server 10800s
+  balance leastconn
+  option tcp-check
+  server-template mysql 1-2 _mysql._tcp.service.consul resolvers consul resolve-opts allow-dup-ip resolve-prefer ipv4 check
+
+backend BE_PGSQL
+  mode tcp
+  timeout client 10800s
+  timeout server 10800s
+  balance leastconn
+  option tcp-check
+  server-template pgsql 1-2 _pgsql._tcp.service.consul resolvers consul resolve-opts allow-dup-ip resolve-prefer ipv4 check
 
 backend BE_REDIS
   mode tcp
@@ -167,19 +189,23 @@ backend BE_REDIS
   option tcp-check
   server-template redis 1-3 _redis._tcp.service.consul resolvers consul resolve-opts allow-dup-ip resolve-prefer ipv4 check
 
-backend BE_PGSQL
-  mode tcp
-  timeout client 10800s
-  timeout server 10800s
-  balance leastconn
-  option tcp-check
-  server-template pgsql 1-3 _pgsql._tcp.service.consul resolvers consul resolve-opts allow-dup-ip resolve-prefer ipv4 check
-
-backend BE_WEBFARM
+backend BE_BITWARDEN
   redirect scheme https code 301 if !{ ssl_fc }
   balance roundrobin
   option httpchk HEAD /
-  server-template web 1-6 _web._tcp.service.consul resolvers consul resolve-opts allow-dup-ip resolve-prefer ipv4 check
+  server-template bitwarden 1-2 _bitwarden._tcp.service.consul resolvers consul resolve-opts allow-dup-ip resolve-prefer ipv4 check
+
+backend BE_ECHO
+  redirect scheme https code 301 if !{ ssl_fc }
+  balance roundrobin
+  option httpchk HEAD /
+  server-template echo 3 _echo._tcp.service.consul resolvers consul resolve-opts allow-dup-ip resolve-prefer ipv4 check
+
+backend BE_HYPRIOT
+  redirect scheme https code 301 if !{ ssl_fc }
+  balance roundrobin
+  option httpchk HEAD /
+  server-template hypriot 3 _hypriot._tcp.service.consul resolvers consul resolve-opts allow-dup-ip resolve-prefer ipv4 check
 
 resolvers consul
   nameserver consul 127.0.0.1:8600
@@ -197,12 +223,8 @@ resolvers consul
         data = <<EOG
 -----BEGIN CERTIFICATE-----
 ...
-...
-...
 -----END CERTIFICATE-----
 -----BEGIN RSA PRIVATE KEY-----
-...
-...
 ...
 -----END RSA PRIVATE KEY-----
         EOG
@@ -215,23 +237,17 @@ resolvers consul
         EOH
       }
 
-      template {
-        destination = "local/cbraker.txt"
-        data = <<EOI
-
-        EOI
-      }
-
       resources {
         // Hardware limits in this cluster
-        cpu = 1000
-        memory = 1024
+        cpu = 128
+        memory = 100
         network {
-          mbits = 100
+          mbits = 10
           port "http"  { static = 80 }
           port "https" { static = 443 }
-          port "redis" { static = 6379 }
+          port "mysql" { static = 3306 }
           port "pgsql" { static = 5432 }
+          port "redis" { static = 6379 }
           port "stats" { static = 9999 }
         }
       }
