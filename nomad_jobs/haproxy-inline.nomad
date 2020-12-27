@@ -45,8 +45,7 @@ job "haproxy" {
         volumes = [
           "local/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg",
           "local/crt-list.txt:/usr/local/etc/haproxy/crt-list.txt",
-          "local/fullchain.pem:/usr/local/etc/haproxy/fullchain.pem",
-          "local/cbraker.txt:/usr/local/etc/haproxy/cbraker.txt",
+          "secrets/fullchain.pem:/usr/local/etc/haproxy/fullchain.pem",
         ]
       }
 
@@ -141,9 +140,6 @@ frontend FE_HTTP
   option forwardfor except 127.0.0.0/8
   http-request set-header X-Client-IP req.hdr_ip([X-Forwarded-For])
   http-request add-header X-Forwarded-Proto http
-    ## LetsEncrypt Certificates
-    ## acl is_letsencrypt path_beg /.well-known/acme-challenge/
-    ## use_backend BE_LE if is_letsencrypt
   default_backend BE_HYPRIOT
 
 frontend FE_HTTPS
@@ -219,14 +215,19 @@ resolvers consul
       }
 
       template {
-        destination = "local/fullchain.pem"
+        destination = "secrets/fullchain.pem"
         data = <<EOG
 -----BEGIN CERTIFICATE-----
 ...
 -----END CERTIFICATE-----
------BEGIN RSA PRIVATE KEY-----
+
+-----BEGIN CERTIFICATE-----
 ...
------END RSA PRIVATE KEY-----
+-----END CERTIFICATE-----
+
+-----BEGIN EC PRIVATE KEY-----
+...
+-----END EC PRIVATE KEY-----
         EOG
       }
 
