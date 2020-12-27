@@ -1,6 +1,6 @@
 
 # Nomad + Consul + Vault
-### Also including: + DNSmasq + HAProxy / Traefik + some example jobs for other typically networked services
+### Also including: LetsEncrypt + DNSmasq + HAProxy and/or Traefik + some other example jobs for typically networked services
 
 The following *how-to guide* was created in order to simplify the creation of a laboratory composed of the follwing components:
 
@@ -18,6 +18,7 @@ Principial Software:
 
 Additional Software:
 
+- LetsEncrypt
 - Docker
 - DNSmasq
 - HAProxy
@@ -575,6 +576,32 @@ curl --silent  -X PUT \
 ```
 
 Above script can be ussed, for example, from an Ansible playbook to perform configuration management over the Vault server/service.
+
+
+
+# LetsEncrypt wildcard certificate creations
+Once the triad  Nomad/Consul/Vault is installed is time to start securing the workloads meanwhile we put some services to operate for the first time. This is the time for LetsEncrypt.   
+
+When you schedule a lot of workloads, specially in the form of containers, you can issue certificates per workload/domain name upon need, as Traefik does, but, you can also issue a wildcard certificate that can be used more widely without the burder of its emission, renew and scheduling, as HAPRoxy does. That's going to be the approach shown here, below. 
+
+LetEncrypt offers different challenge types (http-01, tls-sni-01, tls-alpn-01 and dns-01) as well as a wide range of clients. All of works similar with the only exception that only dns-01 works in order to get a wildcard certificate. So, in this scenario, the idea is to leverage as much as possible the docker capabilities by scheduling a container that can obtain a wildcard certificate for an entire domain on a simple manner. And that simple manner is leveraging DNS records, and more appropiately, TXT records. 
+
+LetEncrypt also counts with a wide range of clients for all type of operating systems, programming languages, software and tools. In this case we'll use a container based on LEGO, Let’s Encrypt client and ACME library written in Go. LEGO offers a container (https://hub.docker.com/r/goacme/lego and https://github.com/go-acme/lego) that if used intelligently can greatly simplify the painful process of certificate issuance. 
+
+Following is the essential part of the nomad job that will run the LEGO container in charge of obtaining and renewing quarterly a wildcard certificate: 
+
+```  
+docker run \
+ -e CLOUDNS_AUTH_ID="nnnn" \
+ -e CLOUDNS_AUTH_PASSWORD="TextStringActingAsToken" \
+ -v /opt/goacme-lego/certs:/certs \
+ goacme/lego \
+ --server https://acme-v02.api.letsencrypt.org/directory \
+ --dns cloudns --accept-tos --email user@email.tld \
+ --pem --path /certs \
+ --dns.resolvers pns31.cloudns.net \
+ --domains "*.dommain.tld" run
+```  
 
 
 # HashiCorp TERRAFORM installation
