@@ -618,7 +618,7 @@ mv terraform /usr/local/bin
 
 # High Availability with `keepalived` 
 
-Keepalived is a package that implements VRRP protocol versions 2 and 3. In essesnce, this is Master-Slaves / Primary-Secondaries implementation for a network high availability solution. 
+Keepalived is a package that implements VRRP protocol versions 2 and 3. In essence, this is Master-Slaves / Primary-Secondaries implementation for a network high availability solution. 
 
 - Package installation
 ```
