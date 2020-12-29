@@ -628,10 +628,6 @@ apt install keepalived
 
 - Configuration files for master/primary node on `/etc/keepalived/keepalived.conf`:
 ``` 
-vrrp_sync_group VG20 {
-    VI_1
-}
-
 vrrp_instance VI_RPI {
     state MASTER
     interface eth0
@@ -647,17 +643,46 @@ vrrp_instance VI_RPI {
     use_vmac
     
     virtual_ipaddress {
-        192.168.90.20
+        192.168.0.20 dev eth0 label eth0:vip
+    }
+    
+    unicast_peer {
+        192.168.0.22
+        192.168.0.23
     }
 }
 ```
 
 - Configuration files for slaves/secondary nodes on `/etc/keepalived/keepalived.conf`:
 ``` 
-vrrp_sync_group VG20 {
-    VI_1
+vrrp_instance VI_RPI {
+    state BACKUP
+    interface eth0
+    virtual_router_id 100
+    priority 150
+    advert_int 1
+    
+    authentication {
+        auth_type AH
+        auth_pass k33p@l!ved
+    }
+    
+    use_vmac
+    
+    virtual_ipaddress {
+        192.168.0.20 dev eth0 label eth0:vip
+    }
+    
+    unicast_peer {
+        192.168.0.21
+        192.168.0.22
+    }
 }
+```
 
+... and ...
+
+``` 
 vrrp_instance VI_RPI {
     state BACKUP
     interface eth0
@@ -673,12 +698,15 @@ vrrp_instance VI_RPI {
     use_vmac
     
     virtual_ipaddress {
-        192.168.90.20
+        192.168.0.20 dev eth0 label eth0:vip
+    }
+    
+    unicast_peer {
+        192.168.0.21
+        192.168.0.23
     }
 }
 ```
-
-
 
 
 
