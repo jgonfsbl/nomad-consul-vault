@@ -641,11 +641,10 @@ vrrp_instance VI_RPI {
     }
     
     use_vmac
-    
+    unicast_src_ip 192.168.0.21
     virtual_ipaddress {
         192.168.0.20 dev eth0 label eth0:vip
     }
-    
     unicast_peer {
         192.168.0.22
         192.168.0.23
@@ -668,11 +667,10 @@ vrrp_instance VI_RPI {
     }
     
     use_vmac
-    
+    unicast_src_ip 192.168.0.22
     virtual_ipaddress {
         192.168.0.20 dev eth0 label eth0:vip
     }
-    
     unicast_peer {
         192.168.0.21
         192.168.0.22
@@ -696,11 +694,10 @@ vrrp_instance VI_RPI {
     }
     
     use_vmac
-    
+    unicast_src_ip 192.168.0.23
     virtual_ipaddress {
         192.168.0.20 dev eth0 label eth0:vip
     }
-    
     unicast_peer {
         192.168.0.21
         192.168.0.23
