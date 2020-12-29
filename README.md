@@ -616,10 +616,90 @@ unzip terraform_0.13.5_linux_arm.zip
 mv terraform /usr/local/bin
 ```
 
+# High Availability with `keepalived` 
+
+Keepalived is a package that implements VRRP protocol versions 2 and 3. In essesnce, this is Master-Slaves / Primary-Secondaries implementation for a network high availability solution. 
+
+- Package installation
+```
+apt install keepalived
+```
+
+
+- Configuration files for master/primary node on `/etc/keepalived/keepalived.conf`:
+``` 
+vrrp_sync_group VG20 {
+    VI_1
+}
+
+vrrp_instance VI_RPI {
+    state MASTER
+    interface eth0
+    virtual_router_id 100
+    priority 200
+    advert_int 1
+    
+    authentication {
+        auth_type AH
+        auth_pass k33p@l!ved
+    }
+    
+    use_vmac
+    
+    virtual_ipaddress {
+        192.168.90.20
+    }
+}
+```
+
+- Configuration files for slaves/secondary nodes on `/etc/keepalived/keepalived.conf`:
+``` 
+vrrp_sync_group VG20 {
+    VI_1
+}
+
+vrrp_instance VI_RPI {
+    state BACKUP
+    interface eth0
+    virtual_router_id 100
+    priority 100
+    advert_int 1
+    
+    authentication {
+        auth_type AH
+        auth_pass k33p@l!ved
+    }
+    
+    use_vmac
+    
+    virtual_ipaddress {
+        192.168.90.20
+    }
+}
+```
+
+
+
+
+
+
+- Edit /etc/sysctl.conf and add at the bottom of the file the following lines:
+
+    ```
+    # Bind nonlocal IPs to real interfaces
+    net.ipv4.ip_nonlocal_bind = 1
+    ```
+
+- Edit /etc/rc.local, and add before `exit 0` this line
+  ```
+  service procps reload
+  ```
+- Reboot
+
 
 # Remove IPv6 support from network stack
 
-- Edit /etc/sysctl.conf
+- Edit /etc/sysctl.conf and add at the bottom of the file the following lines:
 
     ```
     # DISABLE IPv6
@@ -629,7 +709,7 @@ mv terraform /usr/local/bin
     net.ipv6.conf.eth0.disable_ipv6 = 1
     ```
 
-- Edit /etc/rc.local, and add before `exit 0` this line
+- Edit /etc/rc.local, and add before `exit 0` this line **OR** ensure it was already added and continue to the final step power recycling the system.
   ```
   service procps reload
   ```
