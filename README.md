@@ -1,6 +1,6 @@
 
 # Nomad + Consul + Vault
-### Also including: LetsEncrypt + DNSmasq + HAProxy and/or Traefik + some other example jobs for typically networked services
+### Also including: Keepalived + LetsEncrypt + DNSmasq + HAProxy and/or Traefik + some other example jobs for typically networked services
 
 The following *how-to guide* was created in order to simplify the creation of a laboratory composed of the follwing components:
 
@@ -18,6 +18,7 @@ Principial Software:
 
 Additional Software:
 
+- Keepalived
 - LetsEncrypt
 - Docker
 - DNSmasq
