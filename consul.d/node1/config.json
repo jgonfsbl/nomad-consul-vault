@@ -48,8 +48,8 @@
     "retry_interval": "30s",
     "retry_interval_wan": "30s",
     "retry_join": [
-        "192.168.90.22",
-        "192.168.90.23"
+        "192.168.0.22",
+        "192.168.0.23"
     ],
     "retry_max": 0,
     "retry_max_wan": 0,
