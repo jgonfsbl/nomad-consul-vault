@@ -21,9 +21,7 @@ job "hypriot" {
 
     network {
       mode = "bridge"
-      port "web" {
-        to = 80
-      }
+      port "80_web" { to = 80 }
     }
 
     task "hypriot" {
@@ -33,7 +31,7 @@ job "hypriot" {
       config {
         // This is the equivalent to a docker run command line
         image = "hypriot/rpi-busybox-httpd:latest"
-        ports = [ "web" ]
+        ports = [ "80_web" ]
         volumes = [
           "/opt/NFS/hypriot/www:/www",
         ]
@@ -48,7 +46,7 @@ job "hypriot" {
       service {
         // This is used to inform Consul a new service is available
         name = "hypriot"
-        port = "web"
+        port = "80_web"
         tags = [ "hypriot" ]
         check {
           name = "alive"
