@@ -2,52 +2,62 @@
 // Jonathan Gonzalez
 // j@0x30.io
 // https://github.com/EA1HET
-// Nomad v1.0.0
-// Plan date: 2020-12-20
-// Job version: 1.0
 //
-// An HAProxy load balancer system
+// ** HAPROXY **
+//
 
 
 job "haproxy" {
-  // This jobs will instantiate an HAProxy Community Edition (LTS) server
+
+  meta {
+    description   = "HAProxy Load Balancer and Reverse Proxy"
+    nomad_version = "1.0.1"
+    job_version   = "1.0"
+    job_date      = "2021-01-01"
+    team          = "devops"
+    org           = "ea1het"
+  }
 
   region = "global"
   datacenters = ["LAB"]
   type = "system"
-  priority = 100
 
-  group "grp-haproxy" {
-    // Number of executions per task that will grouped into the same Nomad host
+  group "gateway" {
     count = 1
+
+    network {
+      mode = "host"
+      port "http"    { static = 80   }
+      port "https"   { static = 443  }
+      port "mariadb" { static = 3306 }
+      port "pgsql"   { static = 5432 }
+      port "redis"   { static = 6379 }
+      port "stats"   { static = 9999 }
+    }
+
+    // reschedule stanza would be here if type is not system
 
     task "haproxy" {
       driver = "docker"
-      // This is a Docker task using the local Docker daemon
-
-      env {
-        // These are environment variables to pass to the task/container below
-        PYTHONUNBUFFERED=0
-      }
 
       config {
-        // This is the equivalent to a docker run command line
         image = "haproxy:2.3.2-alpine"
+        hostname = "mariadb"
         network_mode = "host"
-        port_map {
-          http  = 80
-          https = 443
-          mysql = 3306
-          pgsql = 5432
-          redis = 6379
-          stats = 9999
-        }
+        ports = ["http", "https", "mariadb", "pgsql", "redis", "stats"]
         volumes = [
           "local/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg",
           "local/crt-list.txt:/usr/local/etc/haproxy/crt-list.txt",
           "secrets/fullchain.pem:/usr/local/etc/haproxy/fullchain.pem",
         ]
       }
+
+      env {
+        PYTHONUNBUFFERED=0
+        TZ="Europe/Madrid"
+      }
+
+      // template stanza starts here
 
       template {
         destination = "local/haproxy.cfg"
@@ -56,21 +66,16 @@ job "haproxy" {
 # Global settings
 #---------------------------------------------------------------------
 global
-    ## server-state-file /opt/haproxy/haproxy.state
-
     log         127.0.0.1 local2 info
     pidfile     /var/run/haproxy.pid
     maxconn     10000
-    # chroot    /var/lib/haproxy
-    # user      haproxy
-    # group     haproxy
-    # daemon
-    # debug
 
     tune.ssl.default-dh-param 2048
     ssl-default-bind-options ssl-min-ver TLSv1.2
     ssl-default-bind-options ssl-max-ver TLSv1.3
     ssl-default-bind-ciphers AES128+EECDH:AES128+EDH
+
+    ## server-state-file /opt/haproxy/haproxy.state
 
 
 #---------------------------------------------------------------------
@@ -102,7 +107,7 @@ defaults
     ## load-server-state-from-file global
 
 listen STATS
-    bind ${NOMAD_IP_http}:9999
+    bind ${NOMAD_IP_stats}:${NOMAD_PORT_stats}
     mode http
     stats enable
     stats show-legends
@@ -117,22 +122,22 @@ listen STATS
 # main frontend which proxys to the backends
 #---------------------------------------------------------------------
 
-frontend FE_MYSQL
+frontend FE_MARIADB
   mode tcp
   option tcplog
-  bind ${NOMAD_IP_http}:3306
-  default_backend BE_MYSQL
+  bind ${NOMAD_IP_mariadb}:3306
+  default_backend BE_MARIADB
 
 frontend FE_PGSQL
   mode tcp
   option tcplog
-  bind ${NOMAD_IP_http}:5432
+  bind ${NOMAD_IP_pgsql}:5432
   default_backend BE_PGSQL
 
 frontend FE_REDIS
   mode tcp
   option tcplog
-  bind ${NOMAD_IP_http}:6379
+  bind ${NOMAD_IP_redis}:6379
   default_backend BE_REDIS
 
 frontend FE_HTTP
@@ -143,7 +148,7 @@ frontend FE_HTTP
   default_backend BE_HYPRIOT
 
 frontend FE_HTTPS
-  bind ${NOMAD_IP_http}:443 ssl crt-list /usr/local/etc/haproxy/crt-list.txt
+  bind ${NOMAD_IP_https}:443 ssl crt /usr/local/etc/haproxy/fullchain.pem
   option forwardfor except 127.0.0.0/8
   http-request set-header X-Client-IP req.hdr_ip([X-Forwarded-For])
   http-request add-header X-Forwarded-Proto https
@@ -158,16 +163,13 @@ frontend FE_HTTPS
 # backends
 #---------------------------------------------------------------------
 
-## backend BE_LE
-##  server letsencrypt 127.0.0.1:8888
-
-backend BE_MYSQL
+backend BE_MARIADB
   mode tcp
   timeout client 10800s
   timeout server 10800s
   balance leastconn
   option tcp-check
-  server-template mysql 1-2 _mysql._tcp.service.consul resolvers consul resolve-opts allow-dup-ip resolve-prefer ipv4 check
+  server-template mariadb 1-2 _mariadb._tcp.service.consul resolvers consul resolve-opts allow-dup-ip resolve-prefer ipv4 check
 
 backend BE_PGSQL
   mode tcp
@@ -220,73 +222,52 @@ resolvers consul
 -----BEGIN CERTIFICATE-----
 ...
 -----END CERTIFICATE-----
-
 -----BEGIN CERTIFICATE-----
 ...
 -----END CERTIFICATE-----
-
 -----BEGIN EC PRIVATE KEY-----
 ...
 -----END EC PRIVATE KEY-----
         EOG
       }
 
-      template {
-        destination = "local/crt-list.txt"
-        data = <<EOH
-/usr/local/etc/haproxy/fullchain.pem
-        EOH
-      }
-
-      resources {
-        // Hardware limits in this cluster
-        cpu = 128
-        memory = 100
-        network {
-          mbits = 10
-          port "http"  { static = 80 }
-          port "https" { static = 443 }
-          port "mysql" { static = 3306 }
-          port "pgsql" { static = 5432 }
-          port "redis" { static = 6379 }
-          port "stats" { static = 9999 }
-        }
-      }
-
-      service {
-        // This is used to inform Consul a new service is available
-        name = "haproxy"
-        port = "stats"
-        tags = [
-          "haproxy",
-          ]
-        check {
-          name = "alive"
-          type = "http"
-          path = "/"
-          interval = "10s"
-          timeout  = "2s"
-        }
-      }
-
-      restart {
-        // The number of attempts to run the job within the specified interval
-        attempts = 10
-        interval = "5m"
-        delay = "25s"
-        mode = "delay"
-      }
+      // template stanza ends here
 
       logs {
         max_files = 5
-        max_file_size = 15
+        max_file_size = 10
       }
 
-      meta {
-        VERSION = "v1.0"
-        LOCATION = "LAB"
+      resources {
+        cpu = 100
+        memory = 128
+      }
+
+      restart {
+        attempts = 3
+        interval = "5m"
+        delay = "10s"
+        mode = "delay"
+      }
+
+      service {
+        name = "haproxy"
+        port = "stats"
+        tags = ["haproxy", "gw", "lb", "rp"]
+        check {
+          name = "alive"
+          type = "tcp"
+          interval = "10s"
+          timeout  = "2s"
+          check_restart {
+            limit = 3
+            grace = "90s"
+            ignore_warnings = false
+          }
+        }
       }
 
     } // EndTask
   } // EndGroup
 } // EndJob
+
