@@ -2,85 +2,98 @@
 // Jonathan Gonzalez
 // j@0x30.io
 // https://github.com/EA1HET
-// Nomad v1.0.0
-// Plan date: 2020-12-15
-// Job version: 1.0
+//
+// ** MARIADB **
 //
 
+
 job "mariadb" {
-  // This jobs will instantiate a MariaDB database into a Docker container
+
+  meta {
+    description   = "MariaDB database"
+    nomad_version = "1.0.1"
+    job_version   = "1.0"
+    job_date      = "2021-01-01"
+    team          = "devops"
+    org           = "ea1het"
+  }
 
   region = "global"
   datacenters = ["LAB"]
   type = "service"
-  priority = 50
 
-  group "grp-mariadb" {
-    // Number of executions per task that will grouped into the same Nomad host
+  group "database" {
     count = 1
 
-    task "mariadb" {
-       driver = "docker"
-       // This is a Docker task using the local Docker daemon
+    network {
+      mode = "bridge"
+      port "mariadb" { to = 3306 }
+    }
 
-      env {
-        // These are environment variables to pass to the task/container below
-        MYSQL_ROOT_PASSWORD=DB_Root_Password_Here
-      }
+    reschedule {
+      unlimited      = false
+      attempts       = 10
+      interval       = "1h"
+      delay          = "5s"
+      delay_function = "fibonacci"
+      max_delay      = "120s"
+    }
+
+    task "mariadb" {
+      driver = "docker"
 
       config {
-        // This is the equivalent to a docker run command line
-        image = "linuxserver/mariadb:arm32v7-latest"
+        image = "linuxserver/mariadb:arm32v7-110.4.17mariabionic-ls5"
+        hostname = "mariadb"
         network_mode = "bridge"
-        port_map {
-          mariadb = 3306
-        }
+        ports = ["mariadb"]
         volumes = [
-          "/opt/NFS/mariadb/data:/config"
+          "/opt/NFS/mariadb/config:/config",
         ]
       }
 
+      env {
+        MYSQL_ROOT_PASSWORD="dbrootpassword"
+        MYSQL_DATABASE=development
+        MYSQL_USER="dbuser"
+        MYSQL_PASSWORD="dbpass"
+        TZ="Europe/Madrid"
+      }
+
+      // template stanza should come here
+
+      logs {
+        max_files = 5
+        max_file_size = 10
+      }
+
       resources {
-        // Hardware reservations in this cluster
         cpu = 100
-        memory = 50
-        network {
-          mbits = 10
-          port  "mariadb" { static = 3306 }
-        }
+        memory = 128
+      }
+
+      restart {
+        attempts = 3
+        interval = "5m"
+        delay = "10s"
+        mode = "delay"
       }
 
       service {
-        // This is used to inform Consul a new service is available
         name = "mariadb"
         port = "mariadb"
-        tags = [
-          "mariadb",
-          ]
+        tags = ["mariadb","database"]
         check {
           name = "alive"
           type = "tcp"
           interval = "10s"
           timeout  = "2s"
+          check_restart {
+            limit = 3
+            grace = "90s"
+            ignore_warnings = false
+          }
         }
-      }
-
-      restart {
-        // The number of attempts to run the job within the specified interval
-        attempts = 10
-        interval = "5m"
-        delay = "25s"
-        mode = "delay"
-      }
-
-      logs {
-        max_files = 5
-        max_file_size = 15
-      }
-
-      meta {
-        VERSION = "v1.0"
-        LOCATION = "LAB"
       }
 
     } // EndTask
