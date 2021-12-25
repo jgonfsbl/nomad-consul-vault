@@ -739,6 +739,13 @@ vrrp_instance VI_RPI {
 - Reboot
 
 
+# Modify IPv4 stack for Docker to get privileged ports in host machine
+
+- Edit /etc/sysctl.conf and add at the bottom of the file the following lines:
+    ```
+    # Modify privileged ports for Docker to get them
+    net.ipv4.ip_unprivileged_port_start=1
+
 
 # Stop unnecessary system services
 
