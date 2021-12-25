@@ -745,7 +745,7 @@ vrrp_instance VI_RPI {
     ```
     # Modify privileged ports for Docker to get them
     net.ipv4.ip_unprivileged_port_start=1
-
+    ```
 
 # Stop unnecessary system services
 
